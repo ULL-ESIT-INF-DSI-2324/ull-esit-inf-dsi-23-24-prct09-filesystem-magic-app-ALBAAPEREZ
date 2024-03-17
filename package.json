@@ -4,10 +4,10 @@
   "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/T5K9tzcv)",
   "main": "index.js",
   "scripts": {
-    "start": "tsc-watch --onSuccess \"node dist/index.js\"",
-    "doc": "typedoc",
     "test": "nyc mocha",
-    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls && rm -rf .nyc_output"
+    "coverage": "nyc npm test && nyc report --reporter=lcov",
+    "doc": "typedoc",
+    "start": "tsc-watch --onSuccess \"node dist/EJERCICIO1/index.js\""
   },
   "keywords": [],
   "author": "",
