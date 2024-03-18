@@ -4,8 +4,8 @@
   "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/T5K9tzcv)",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha",
-    "coverage": "nyc npm test && nyc report --reporter=lcov",
+    "test": "c8 mocha",
+    "coverage": "c8 npm test && c8 report --reporter=lcov",
     "doc": "typedoc",
     "start": "tsc-watch --onSuccess \"node dist/EJERCICIO1/index.js\""
   },
@@ -17,6 +17,7 @@
     "@types/mocha": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
+    "c8": "^9.1.0",
     "chai": "^4.4.1",
     "eslint": "^8.57.0",
     "mocha": "^10.3.0",
