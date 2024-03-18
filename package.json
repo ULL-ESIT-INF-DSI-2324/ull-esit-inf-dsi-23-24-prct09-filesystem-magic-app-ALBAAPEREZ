@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/T5K9tzcv)",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "c8 mocha",
     "coverage": "c8 npm test && c8 report --reporter=lcov",
@@ -25,5 +26,8 @@
     "ts-node": "^10.9.2",
     "tsc-watch": "^6.0.4",
     "typedoc": "^0.25.12"
+  },
+  "dependencies": {
+    "typescript": "^5.4.2"
   }
 }
