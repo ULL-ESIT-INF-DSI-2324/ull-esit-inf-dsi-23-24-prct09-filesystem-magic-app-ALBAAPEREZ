@@ -1,0 +1,13 @@
+{
+  "id": 2,
+  "name": "Time Walk",
+  "manaCost": 2,
+  "color": "blue",
+  "cardType": "sorcery",
+  "rarity": "rare",
+  "rulesText": "Target player takes an extra turn after this one.",
+  "power": 5,
+  "toughness": 20,
+  "loyalty": 100,
+  "marketValue": 5000
+}

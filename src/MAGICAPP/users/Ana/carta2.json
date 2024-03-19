@@ -1,0 +1,13 @@
+{
+  "id": 4,
+  "name": "Mox Pearl",
+  "manaCost": 0,
+  "color": "white",
+  "cardType": "artifact",
+  "rarity": "mitic",
+  "rulesText": "Tap to add one white mana to your mana pool.",
+  "power": 1000,
+  "toughness": 300,
+  "loyalty": 200,
+  "marketValue": 30000
+}

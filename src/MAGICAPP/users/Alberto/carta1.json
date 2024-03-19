@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "name": "Black Lotus",
+  "manaCost": 0,
+  "color": "red",
+  "cardType": "artifact",
+  "rarity": "rare",
+  "rulesText": "Add three mana of any one color. Then put Black Lotus into its owner's graveyard.",
+  "power": 10,
+  "toughness": 80,
+  "loyalty": 60,
+  "marketValue": 10000
+}

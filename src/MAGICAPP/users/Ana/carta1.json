@@ -1,0 +1,13 @@
+{
+  "id": 3,
+  "name": "Ancestral Recall",
+  "manaCost": 1,
+  "color": "blue",
+  "cardType": "instant",
+  "rarity": "super rare",
+  "rulesText": "Target player draws three cards.",
+  "power": 80,
+  "toughness": 10,
+  "loyalty": 40,
+  "marketValue": 6000
+}

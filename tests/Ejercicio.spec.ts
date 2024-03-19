@@ -2,7 +2,7 @@
 
 import 'mocha';
 import { expect } from 'chai';
-import { Dog, Cat, AnimalSound } from '../src/EJERCICIO.js';
+import { Dog, Cat, AnimalSound } from '../src/EJERCICIO';
 
 describe('Ejercicio de ejemplo', () => {
   it('Perro hace Woof!', () => {
