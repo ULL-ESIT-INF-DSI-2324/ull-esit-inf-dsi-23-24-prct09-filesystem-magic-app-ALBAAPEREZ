@@ -52,7 +52,6 @@ describe('ProcesadorMochila', () => {
     expect(isValid).to.be.false;
   });
 
-
   it('lanza un error con el mensaje correcto si los datos no son válidos', () => {
     const procesador = new ProcesadorCSV();
     const contenido = '2\n1,1\n2'; // Contenido inválido
