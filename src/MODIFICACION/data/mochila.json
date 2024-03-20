@@ -1,0 +1,16 @@
+{
+  "capacidad": 15,
+  "numElementos": 2,
+  "elementos": [
+    {
+      "numElemento": 1,
+      "peso": 5,
+      "beneficio": 10
+    },
+    {
+      "numElemento": 2,
+      "peso": 8,
+      "beneficio": 12
+    }
+  ]
+}
