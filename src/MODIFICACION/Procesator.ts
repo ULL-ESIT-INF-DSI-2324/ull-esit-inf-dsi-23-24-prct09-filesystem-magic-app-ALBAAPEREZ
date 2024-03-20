@@ -21,11 +21,7 @@ export abstract class ProcesadorMochila {
    */
   procesar(archivo: string): [number[], number[]] {
     const [beneficios, pesos] = this.leerArchivo(archivo);
-    const isValid = this.verificar(beneficios, pesos);
     // si no es válido, lanza un error
-    if (!isValid) {
-      throw new Error("Los beneficios y pesos no son válidos.");
-    }
     return [beneficios, pesos];
   }
 

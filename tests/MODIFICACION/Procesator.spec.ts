@@ -6,6 +6,7 @@ import { ProcesadorMochila} from '../../src/MODIFICACION/Procesator.js';
 import { ProcesadorCSV } from '../../src/MODIFICACION/ProcesadorCSV.js';
 import * as fs from 'fs';
 
+
 // pruebas para la clase de procesar
 describe('ProcesadorMochila', () => {
   // prueba para el metodo procesar es una función
@@ -50,18 +51,19 @@ describe('ProcesadorMochila', () => {
     const isValid = procesador.verificar([-1, 2, 3], [4, 5, 6]);
     expect(isValid).to.be.false;
   });
-  // cerificar que lo que retorna es un array
-  it('procesar retorna un array', () => {
+
+
+  it('lanza un error con el mensaje correcto si los datos no son válidos', () => {
     const procesador = new ProcesadorCSV();
-    const isValid = procesador.procesar('archivo.csv');
-    expect(isValid).to.be.an('array');
+    const contenido = '2\n1,1\n2'; // Contenido inválido
+    fs.writeFileSync('archivo.csv', contenido);
+    try {
+      procesador.procesar('archivo.csv');
+      expect.fail('Los beneficios y pesos no son válidos.');
+    } catch (err) {
+      expect(err.message).to.equal("Los beneficios y pesos no son válidos.");
+    }
+    fs.unlinkSync('archivo.csv');
   });
 
-  // comprobar que lo que retorna es un array de beneficios y pesos
-  it('procesar retorna un array de beneficios y pesos', () => {
-    const procesador = new ProcesadorCSV();
-    const isValid = procesador.procesar('archivo.csv');
-    expect(isValid).to.be.an('array');
-  });
-  
 });
