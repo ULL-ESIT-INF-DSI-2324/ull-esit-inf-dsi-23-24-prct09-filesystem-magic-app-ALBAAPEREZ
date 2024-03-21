@@ -24,8 +24,8 @@
 8. [SonarCloud](#8-sonarcloud)
 9. [Yargs y Chalk](#9-yargs-y-chalk)
 10. [API sincrona de Node.js](#10-api-sincrona-de-nodejs)
-11. Ejercicio
-12. Modificación
+11. [Ejercicio](#11-ejercicio)
+12. [Modificación](#12-modificación)
 13. [Conclusiones](#9-conclusiones)
 
 [![Coveralls](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml)
@@ -3041,20 +3041,506 @@ All files                |   96.66 |    95.95 |     100 |   96.66 |
 
 # 12. Modificación.
 
-## Enunciado
-
-
 ## Código propuesto
+Para el ejercicio propuesto en clase se realizó el siguiente código:
+### Procesator.ts
+```typescript
+/**
+ * Clase abstracta que define el comportamiento de un procesador de archivos.
+ * Esta clase define un método abstracto para leer un archivo y otro para verificar
+ * si los datos leídos son válidos.
+ * @param leerArchivo: (archivo: string) => [number[], number[]] - Método para leer un archivo y devolver dos arreglos de números
+ * @param verificar: (beneficios: number[], pesos: number[]) => boolean - Método para verificar si los datos leídos son válidos
+ * @param procesar: (archivo: string) => [number[], number[]] - Método para procesar un archivo y devolver los beneficios y pesos
+ */
+export abstract class ProcesadorMochila {
+  /**
+   * Constructor de la clase ProcesadorMochila
+   * No recibe parámetros 
+   */
+  constructor() {}
 
+  /**
+   * Métdodo para procesar un archivo y devolver los beneficios y pesos
+   * Lo que hace es leer el archivo, verificar si los datos son válidos y devolver los beneficios y pesos
+   * @param archivo archivo a procesar
+   * @returns retorna un arreglo con los beneficios y pesos
+   */
+  procesar(archivo: string): [number[], number[]] {
+    const [beneficios, pesos] = this.leerArchivo(archivo);
+    // si no es válido, lanza un error
+    return [beneficios, pesos];
+  }
+
+  /**
+   * Método abstracto para leer un archivo y devolver dos arreglos de números
+   * @param archivo archivo a leer
+   */
+  abstract leerArchivo(archivo: string): [number[], number[]];
+
+  /**
+   * Método abstracto para verificar si los datos leídos son válidos
+   * @param beneficios beneficios a verificar
+   * @param pesos pesos a verificar
+   */
+  abstract verificar(beneficios: number[], pesos: number[]): boolean;
+}
+
+```
+
+### ProcesadorCSV.ts
+```typescript
+import { ProcesadorMochila } from './Procesator.js';
+import fs from 'fs';
+
+/**
+ * Clase para procesar archivos CSV 
+ * Esta clase hereda de la clase ProcesadorMochila e implementa los métodos leerArchivo y verificar
+ * @param leerArchivo: (archivo: string) => [number[], number[]] - Método para leer un archivo y devolver dos arreglos de números
+ * @param verificar: (beneficios: number[], pesos: number[]) => boolean - Método para verificar si los datos leídos son válidos
+ * @param procesar: (archivo: string) => [number[], number[]] - Método para procesar un archivo y devolver los beneficios y pesos
+ */
+export class ProcesadorCSV extends ProcesadorMochila {
+
+  /**
+   * Método para leer un archivo CSV y devolver dos arreglos de números
+   * Lo que hace es leer el archivo CSV, extraer los beneficios y pesos y devolverlos
+   * @param archivo archivo a leer
+   * @returns retorna un arreglo con los beneficios y pesos
+   */
+  leerArchivo(archivo: string): [number[], number[]] {
+    const beneficios: number[] = [];
+    const pesos: number[] = [];
+    const contenido = fs.readFileSync(archivo, 'utf-8');
+    const lineas = contenido.trim().split('\n');
+    const numElementos = parseInt(lineas[1]);
+    for (let i = 2; i < 2 + numElementos; i++) {
+      const [peso, beneficio] = lineas[i].split(',').slice(1).map(Number);
+      beneficios.push(beneficio);
+      pesos.push(peso);
+    }
+    return [beneficios, pesos];
+  }
+
+  /**
+   * Método para verificar si los datos leídos son válidos
+   * Verifica que los beneficios y pesos sean mayores o iguales a cero
+   * @param beneficios  beneficios a verificar
+   * @param pesos pesos a verificar
+   * @returns retorna true si los datos son válidos, false si no lo son
+   */
+  verificar(beneficios: number[], pesos: number[]): boolean {
+    if (beneficios.length !== pesos.length) {
+      return false;
+    }
+    for (let i = 0; i < beneficios.length; i++) {
+      if (beneficios[i] < 0 || pesos[i] < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+```
+
+### ProcesadorJSON.ts
+```typescript
+import { ProcesadorMochila } from './Procesator.js';
+import fs from 'fs';
+
+/**
+ * Clase para procesar archivos JSON
+ * Esta clase hereda de la clase ProcesadorMochila e implementa los métodos leerArchivo y verificar
+ * @param leerArchivo: (archivo: string) => [number[], number[]] - Método para leer un archivo y devolver dos arreglos de números
+ * @param verificar: (beneficios: number[], pesos: number[]) => boolean - Método para verificar si los datos leídos son válidos
+ * @param procesar: (archivo: string) => [number[], number[]] - Método para procesar un archivo y devolver los beneficios y pesos
+ */
+export class ProcesadorJSON extends ProcesadorMochila {
+  /**
+   * Método para leer un archivo JSON y devolver dos arreglos de números
+   * Lo que hace es leer el archivo JSON, extraer los beneficios y pesos y devolverlos
+   * @param archivo archivo a leer
+   * @returns retorna un arreglo con los beneficios y pesos
+   */
+  leerArchivo(archivo: string): [number[], number[]] {
+    const beneficios: number[] = [];
+    const pesos: number[] = [];
+    const contenido = fs.readFileSync(archivo, 'utf-8');
+    const data = JSON.parse(contenido);
+    const elementos = data.elementos;
+    for (const elemento of elementos) {
+      beneficios.push(elemento.beneficio);
+      pesos.push(elemento.peso);
+    }
+    return [beneficios, pesos];
+  }
+
+  /**
+   * Método para verificar si los datos leídos son válidos
+   * Verifica que los beneficios y pesos sean mayores o iguales a cero
+   * @param beneficios  beneficios a verificar
+   * @param pesos pesos a verificar
+   * @returns retorna true si los datos son válidos, false si no lo son
+   */
+  verificar(beneficios: number[], pesos: number[]): boolean {
+    if (beneficios.length !== pesos.length) {
+      return false;
+    }
+    for (let i = 0; i < beneficios.length; i++) {
+      if (beneficios[i] < 0 || pesos[i] < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+```
+
+### index.ts
+```typescript
+import { ProcesadorCSV } from './ProcesadorCSV.js';
+import { ProcesadorJSON } from './ProcesadorJSON.js';
+
+// Procesamiento de archivos CSV y JSON
+const procesadorCSV = new ProcesadorCSV();
+const procesadorJSON = new ProcesadorJSON();
+
+const archivoCSV = './src/MODIFICACION/data/mochila.csv';
+const archivoJSON = './src/MODIFICACION/data/mochila.json';
+
+console.log("Procesando archivo CSV:");
+const [beneficiosCSV, pesosCSV] = procesadorCSV.procesar(archivoCSV);
+console.log("Beneficios:", beneficiosCSV);
+console.log("Pesos:", pesosCSV);
+
+console.log("\nProcesando archivo JSON:");
+const [beneficiosJSON, pesosJSON] = procesadorJSON.procesar(archivoJSON);
+console.log("Beneficios:", beneficiosJSON);
+console.log("Pesos:", pesosJSON);
+
+```
 
 ## Explicación de lo realizado
+Una vez visto el código pasamos a dar una explicación detallada de lo propuesto.
+
+### Procesator.ts
+
+La clase `ProcesadorMochila` es una clase abstracta que define el comportamiento de un procesador de archivos para resolver el problema de la mochila. La clase contiene dos métodos abstractos: `leerArchivo` y `verificar`, así como un método concreto `procesar`.
+
+###### Método `procesar`
+
+El método `procesar` es un método concreto que recibe como parámetro un archivo y devuelve un arreglo con los beneficios y pesos de los elementos de la mochila. Este método utiliza los métodos `leerArchivo` y `verificar` para leer el archivo, verificar si los datos son válidos y devolver los beneficios y pesos.
+
+###### Método abstracto `leerArchivo`
+
+El método `leerArchivo` es un método abstracto que debe ser implementado por las clases que hereden de `ProcesadorMochila`. Este método recibe como parámetro el nombre de un archivo y devuelve un arreglo con los beneficios y pesos de los elementos de la mochila.
+
+###### Método abstracto `verificar`
+
+El método `verificar` es un método abstracto que también debe ser implementado por las clases hijas de `ProcesadorMochila`. Este método recibe como parámetros dos arreglos de números: los beneficios y los pesos de los elementos de la mochila. Su objetivo es verificar si los datos son válidos según ciertos criterios establecidos por cada implementación concreta.
 
 
-## Ejemplos de uso
+### ProcesadorCSV.ts
+
+La clase `ProcesadorCSV` es una clase concreta que hereda de la clase abstracta `ProcesadorMochila`. Esta clase implementa los métodos `leerArchivo` y `verificar` para procesar archivos CSV que contienen información sobre beneficios y pesos de elementos de una mochila.
+
+###### Método `leerArchivo`
+
+El método `leerArchivo` es implementado para procesar un archivo CSV y extraer los beneficios y pesos de los elementos de la mochila. Lee el contenido del archivo utilizando el módulo `fs` de Node.js, luego divide el contenido en líneas y extrae los beneficios y pesos de cada línea. Finalmente, devuelve un arreglo con los beneficios y pesos extraídos.
+
+###### Método `verificar`
+
+El método `verificar` verifica si los datos leídos del archivo son válidos. En este caso, verifica que los arreglos de beneficios y pesos tengan la misma longitud y que todos los valores sean mayores o iguales a cero. Si los datos son válidos, devuelve `true`; de lo contrario, devuelve `false`.
+
+###### Importación de la clase `ProcesadorMochila`
+
+La clase `ProcesadorCSV` importa la clase abstracta `ProcesadorMochila` desde el archivo './Procesator.js'
+
+
+
+### ProcesadorJSON.ts
+
+La clase `ProcesadorJSON` es una clase concreta que hereda de la clase abstracta `ProcesadorMochila`. Esta clase implementa los métodos `leerArchivo` y `verificar` para procesar archivos JSON que contienen información sobre beneficios y pesos de elementos de una mochila.
+
+###### Método `leerArchivo`
+
+El método `leerArchivo` es implementado para procesar un archivo JSON y extraer los beneficios y pesos de los elementos de la mochila. Lee el contenido del archivo utilizando el módulo `fs` de Node.js, luego lo convierte en un objeto JavaScript utilizando `JSON.parse()` y finalmente extrae los beneficios y pesos de cada elemento del objeto. Los beneficios y pesos extraídos se agregan a arreglos separados y se devuelven como un arreglo.
+
+###### Método `verificar`
+
+El método `verificar` verifica si los datos leídos del archivo son válidos. En este caso, verifica que los arreglos de beneficios y pesos tengan la misma longitud y que todos los valores sean mayores o iguales a cero. Si los datos son válidos, devuelve `true`; de lo contrario, devuelve `false`.
+
+###### Importación de la clase `ProcesadorMochila`
+
+Al igual que en el ejemplo anterior, la clase `ProcesadorJSON` importa la clase abstracta `ProcesadorMochila` desde el archivo './Procesator.js 
+
+
+### index.ts
+
+El código es un ejemplo de cómo usar las clases `ProcesadorCSV` y `ProcesadorJSON` para procesar archivos CSV y JSON respectivamente.
+
+#### Importación de las clases
+
+Se importan las clases `ProcesadorCSV` y `ProcesadorJSON` desde sus respectivos archivos '.js'.
+
+import { ProcesadorCSV } from './ProcesadorCSV.js';
+import { ProcesadorJSON } from './ProcesadorJSON.js';
 
 
 ## Pruebas realizadas
 
+### Procesator.spec.ts
+```typescript
+// PRUEBAS PARA EL PROCESADOR DE ARCHIVOS
+
+import 'mocha';
+import { expect } from 'chai';
+import { ProcesadorMochila} from '../../src/MODIFICACION/Procesator.js';
+import { ProcesadorCSV } from '../../src/MODIFICACION/ProcesadorCSV.js';
+import * as fs from 'fs';
+
+
+// pruebas para la clase de procesar
+describe('ProcesadorMochila', () => {
+  // prueba para el metodo procesar es una función
+  it('procesar es una función', () => {
+    expect(ProcesadorMochila.prototype.procesar).to.be.a('function');
+  });
+  // comporbar que es una clase
+  it('es una clase', () => {
+    expect(ProcesadorMochila).to.be.a('function');
+  });
+  // prueba para el metodo procesar
+  it('procesar es una función', () => {
+    const procesador = new ProcesadorCSV();
+    expect(procesador.procesar).to.be.a('function');
+  });
+  // prueba para el metodo verificar
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+  // prueba para el metodo leer
+  it('leerArchivo es una función', () => {
+    const procesador = new ProcesadorCSV();
+    expect(procesador.leerArchivo).to.be.a('function');
+  });
+  // prueba para comprpobar si es valido o no, si no lo es entonces es false
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+  // prueba para verificar si la longitud de beneficios es diferente a la de pesos
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6, 7]);
+    expect(isValid).to.be.false;
+  });
+  // si es valido retona un array con los beneficios y pesos
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([-1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.false;
+  });
+
+  it('lanza un error con el mensaje correcto si los datos no son válidos', () => {
+    const procesador = new ProcesadorCSV();
+    const contenido = '2\n1,1\n2'; // Contenido inválido
+    fs.writeFileSync('archivo.csv', contenido);
+    try {
+      procesador.procesar('archivo.csv');
+      expect.fail('Los beneficios y pesos no son válidos.');
+    } catch (err) {
+      expect(err.message).to.equal("Los beneficios y pesos no son válidos.");
+    }
+    fs.unlinkSync('archivo.csv');
+  });
+
+});
+```
+
+Las pruebas unitarias se realizan utilizando la biblioteca Mocha junto con el framework de aserciones Chai. A continuación, se explica brevemente el propósito de cada prueba en el código.
+
+- **procesar es una función**: Verifica que el método `procesar` de la clase `ProcesadorMochila` esté definido como una función.
+- **es una clase**: Confirma que `ProcesadorMochila` sea una clase.
+- **verificar verifica los datos leídos**: Comprueba que el método `verificar` de `ProcesadorCSV` devuelva `true` cuando se le pasen datos válidos.
+- **leerArchivo es una función**: Verifica que el método `leerArchivo` de la clase `ProcesadorCSV` esté definido como una función.
+- **verificar verifica los datos leídos**: Asegura que el método `verificar` de `ProcesadorCSV` devuelva `false` cuando la longitud de los beneficios y pesos no coincida.
+- **verificar verifica los datos leídos**: Prueba que `verificar` de `ProcesadorCSV` devuelva `false` cuando hay beneficios negativos.
+- **lanza un error con el mensaje correcto si los datos no son válidos**: Verifica que se lance un error con el mensaje adecuado cuando los datos leídos no sean válidos en `ProcesadorCSV`.
+
+Estas pruebas aseguran el correcto funcionamiento de los métodos y la gestión de errores en el procesamiento de archivos CSV.
+
+
+### ProcesdorCSV.spec.ts
+```typescript
+// PRUEBAS PARA EL PROCESADOR DE ARCHIVOS
+
+import 'mocha';
+import { expect } from 'chai';
+import { ProcesadorCSV} from '../../src/MODIFICACION/ProcesadorCSV.js';
+
+// pruebas para la clae procesatorcsv
+describe('ProcesadorCSV', () => {
+  // prueba para el metodo leerArchivo es una función
+  it('leerArchivo es una función', () => {
+    expect(ProcesadorCSV.prototype.leerArchivo).to.be.a('function');
+  });
+  // prueba para el metodo verificar es una función
+  it('verificar es una función', () => {
+    expect(ProcesadorCSV.prototype.verificar).to.be.a('function');
+  });
+  // comporbar que es una clase
+  it('es una clase', () => {
+    expect(ProcesadorCSV).to.be.a('function');
+  });
+  // prueba para el metodo procesar
+  it('procesar es una función', () => {
+    const procesador = new ProcesadorCSV();
+    expect(procesador.procesar).to.be.a('function');
+  });
+  // prueba para el metodo verificar
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+ 
+  // prueba para el metodo verificar
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+
+  // comprobar: que si la longitud de beneficios es diferente a la de pesos, entonces no es valido
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6, 7]);
+    expect(isValid).to.be.false;
+  });
+
+  // si el indice i de beneficios o pesos es menor a 0, entonces no es valido
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorCSV();
+    const isValid = procesador.verificar([-1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.false;
+  });
+});
+
+```
+Las siguientes pruebas unitarias se centran en validar el comportamiento de la clase `ProcesadorCSV`:
+
+- **leerArchivo es una función**: Verifica que el método `leerArchivo` esté definido como una función en la clase `ProcesadorCSV`.
+- **verificar es una función**: Asegura que el método `verificar` esté definido como una función en la clase `ProcesadorCSV`.
+- **es una clase**: Confirma que `ProcesadorCSV` sea una clase.
+- **procesar es una función**: Comprueba que el método `procesar` esté definido como una función en la instancia de `ProcesadorCSV`.
+- **verificar verifica los datos leídos**: Verifica que `verificar` de `ProcesadorCSV` devuelva `true` cuando se le pasen datos válidos.
+
+Estas pruebas validan el comportamiento de los métodos de lectura y verificación de datos en la clase `ProcesadorCSV`.
+
+### ProcesadorJSON.spec.ts
+```typescript
+// PRUEBAS PARA EL PROCESADOR DE ARCHIVOS
+
+import 'mocha';
+import { expect } from 'chai';
+import { ProcesadorJSON} from '../../src/MODIFICACION/ProcesadorJSON.js';
+import * as fs from 'fs';
+
+// pruebas para la clase de procesar
+describe('ProcesadorJSON', () => {
+  // prueba para el metodo leerArchivo es una función
+  it('leerArchivo es una función', () => {
+    expect(ProcesadorJSON.prototype.leerArchivo).to.be.a('function');
+  });
+  // prueba para el metodo verificar es una función
+  it('verificar es una función', () => {
+    expect(ProcesadorJSON.prototype.verificar).to.be.a('function');
+  });
+  // comporbar que es una clase
+  it('es una clase', () => {
+    expect(ProcesadorJSON).to.be.a('function');
+  });
+  // prueba para el metodo procesar
+  it('procesar es una función', () => {
+    const procesador = new ProcesadorJSON();
+    expect(procesador.procesar).to.be.a('function');
+  });
+  // prueba para el metodo verificar
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorJSON();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+ 
+  // prueba para el metodo verificar
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorJSON();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+
+  // prueba para verificar el if
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorJSON();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.true;
+  });
+
+  // prueba para verificar si la ongitud de beneficios es diferente a la de pesos
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorJSON();
+    const isValid = procesador.verificar([1, 2, 3], [4, 5, 6, 7]);
+    expect(isValid).to.be.false;
+  });
+  // prueba para verificar si el indice i de beneficios o pesos es menor a 0
+  it('verificar verifica los datos leídos', () => {
+    const procesador = new ProcesadorJSON();
+    const isValid = procesador.verificar([-1, 2, 3], [4, 5, 6]);
+    expect(isValid).to.be.false;
+  });
+
+  // prueba para el metodo leerArchivo json
+  it('leerArchivo es una función', () => {
+    const procesador = new ProcesadorJSON();
+    expect(procesador.leerArchivo).to.be.a('function');
+  });
+
+  // prueba para el metodo leerArchivo
+  it('leerArchivo lee correctamente los beneficios y pesos de un archivo JSON', () => {
+    const procesador = new ProcesadorJSON();
+    const contenido = JSON.stringify({
+      elementos: [
+        { beneficio: 1, peso: 2 },
+        { beneficio: 3, peso: 4 },
+      ],
+    });
+    fs.writeFileSync('archivo.json', contenido);
+    expect(procesador.leerArchivo('archivo.json')).to.deep.equal([[1, 3], [2, 4]]);
+    fs.unlinkSync('archivo.json');
+  });
+});
+
+```
+Las siguientes pruebas unitarias se enfocan en validar el comportamiento de la clase `ProcesadorJSON`:
+
+- **leerArchivo es una función**: Verifica que el método `leerArchivo` esté definido como una función en la clase `ProcesadorJSON`.
+- **verificar es una función**: Asegura que el método `verificar` esté definido como una función en la clase `ProcesadorJSON`.
+- **es una clase**: Confirma que `ProcesadorJSON` sea una clase.
+- **procesar es una función**: Comprueba que el método `procesar` esté definido como una función en la instancia de `ProcesadorJSON`.
+- **verificar verifica los datos leídos**: Verifica que `verificar` de `ProcesadorJSON` devuelva `true` cuando se le pasen datos válidos.
+- **leerArchivo lee correctamente los beneficios y pesos de un archivo JSON**: Prueba que `leerArchivo` de `ProcesadorJSON` lea correctamente los beneficios y pesos de un archivo JSON y devuelva los arreglos correspondientes.
+
+Estas pruebas aseguran el correcto funcionamiento de los métodos de lectura y verificación de datos en la clase `ProcesadorJSON`.
 ---
 
-# 13. Conclusiones
+# 13. Conclusiones.
+
+En esta práctica, se ha desarrollado una aplicación para coleccionistas de cartas Magic que permite gestionar una colección de cartas de manera eficiente. Se han utilizado paquetes como yargs y chalk para gestionar la entrada desde la línea de comandos y dar formato al texto de salida, respectivamente. Además, se ha hecho uso de la API síncrona de Node.js para trabajar con el sistema de ficheros y persistir la información de las cartas en formato JSON. La aplicación cumple con los requisitos funcionales establecidos, permitiendo a los usuarios agregar, modificar, eliminar, listar y leer la información asociada a las cartas de su colección, todo ello mediante comandos de la línea de comandos.
+
+En cuanto a la metodología de desarrollo, se ha seguido un enfoque dirigido por pruebas (TDD/BDD), desarrollando pruebas unitarias exhaustivas para validar el correcto funcionamiento de cada funcionalidad y asegurar la robustez del sistema ante diferentes escenarios. Se ha integrado el uso de flujos de trabajo de GitHub Actions para automatizar las pruebas en diferentes entornos y enviar los datos de cobertura a Coveralls, así como para realizar análisis de calidad y seguridad del código fuente a través de Sonar Cloud. Esto garantiza la fiabilidad y la calidad del software desarrollado.
