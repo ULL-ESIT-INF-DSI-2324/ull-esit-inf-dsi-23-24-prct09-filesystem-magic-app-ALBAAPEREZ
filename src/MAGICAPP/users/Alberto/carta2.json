@@ -1,13 +1,11 @@
 {
   "id": 2,
-  "name": "Time Walk",
+  "name": "Planeswalker",
   "manaCost": 2,
-  "color": "blue",
+  "color": "Azul",
   "cardType": "sorcery",
-  "rarity": "rare",
+  "rarity": "mitica",
   "rulesText": "Target player takes an extra turn after this one.",
-  "power": 5,
-  "toughness": 20,
   "loyalty": 100,
   "marketValue": 5000
 }

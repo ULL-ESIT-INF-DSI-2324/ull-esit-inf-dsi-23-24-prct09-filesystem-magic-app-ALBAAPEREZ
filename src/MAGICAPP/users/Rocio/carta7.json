@@ -1,0 +1,10 @@
+{
+  "id": 7,
+  "name": "Mox Ruby",
+  "manaCost": 0,
+  "color": "Rojo",
+  "cardType": "Artefacto",
+  "rarity": "Común",
+  "rulesText": "Tap to add one red mana to your mana pool.",
+  "marketValue": 30
+}

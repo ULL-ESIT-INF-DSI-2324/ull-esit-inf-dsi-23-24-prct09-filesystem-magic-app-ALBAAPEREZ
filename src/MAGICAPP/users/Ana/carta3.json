@@ -1,13 +1,12 @@
 {
   "id": 3,
-  "name": "Ancestral Recall",
+  "name": "Jace, the Mind Sculptor",
   "manaCost": 1,
-  "color": "blue",
-  "cardType": "instant",
-  "rarity": "super rare",
+  "color": "Azul",
+  "cardType": "Criatura",
+  "rarity": "rara",
   "rulesText": "Target player draws three cards.",
   "power": 80,
   "toughness": 10,
-  "loyalty": 40,
   "marketValue": 6000
 }

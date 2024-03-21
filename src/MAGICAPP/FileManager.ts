@@ -1,45 +1,57 @@
 import fs from 'fs';
 import { Card } from './Card.js';
+import * as path from 'path';
 
 /**
- * Clase para manejar la lectura y escritura de archivos JSON
+ * Clase para la gestión de archivos
  * Esta clase se utiliza para guardar y cargar la información de las cartas en archivos JSON
+ * Cada usuario tiene su propio directorio y cada carta se guarda en un archivo JSON
  * @param username: string - Nombre de usuario
  * @param userDir: string - Directorio del usuario
- * @param getFilePath: (cardId: number) => string - Función para obtener la ruta del archivo de una carta
- * @param save: (collection: Map<number, Card>) => void - Método para guardar la colección de cartas
- * @param load: () => Map<number, Card> - Método para cargar la colección de cartas
+ * @param getFilePath: string - Ruta del archivo
+ * @param save: void - Guardar la colección de cartas en archivos JSON
+ * @param load: Map<number, Card> - Cargar la colección de cartas desde archivos JSON
+ * @param collection: Map<number, Card> - Colección de cartas
  */
 export class FileManager {
   /**
-   * Directorio del usuario para guardar los archivos JSON
-   * @param userDir: string
+   * Directorio del usuario, donde se guardan los archivos JSON
+   * Es privado y solo se puede acceder desde la clase
    */
   private readonly userDir: string;
 
   /**
-   * Constructor de la clase para inicializar el directorio del usuario
-   * Se crea el directorio del usuario si no existe al momento de instanciar la clase
-   * @param username nombre de usuario
+   * Constructor de la clase FileManager
+   * Se encarga de inicializar el directorio del usuario según el nombre de usuario
+   * @param username username: string - Nombre de usuario
    */
   constructor(private username: string) {
-    this.userDir = `./users/${this.username}`;
+    this.userDir = `./src/MAGICAPP/users/${username}`;
   }
-
+  
   /**
-   * Método para obtener la ruta del archivo de una carta
-   * @param cardId número de identificación de la carta
-   * @returns string - Ruta del archivo de la carta
+   * Método que retorna el directorio del usuario
+   * @returns Retorna el directorio del usuario 
    */
-  private getFilePath(cardId: number): string {
-    return `${this.userDir}/card${cardId}.json`;
+  public getUserDir(): string {
+    return this.userDir;
   }
 
   /**
-   * Método para guardar la colección de cartas
-   * Lo que hace es comprobar si existe el directorio del usuario, si no existe lo crea
-   * Luego recorre la colección de cartas y guarda cada una en un archivo JSON dentro del 
-   * directorio del usuario indicado
+   * Retorna la ruta del archivo de la carta
+   * Lo que hace es concatenar el directorio del usuario con el nombre del archivo
+   * @param cardId cardId: number - Identificador de la carta
+   * @returns retorna la ruta del archivo
+   */
+  public getFilePath(cardId: number): string {
+    return path.join(this.userDir, `card${cardId}.json`);
+  }
+
+  /**
+   * Método que guarda la colección de cartas en archivos JSON
+   * Lo que hace es comprobar si el directorio del usuario existe, si no existe lo crea
+   * Luego recorre la colección de cartas y guarda cada carta en un archivo JSON
+   * @param collection collection: Map<number, Card> - Colección de cartas
    */
   public save(collection: Map<number, Card>): void {
     if (!fs.existsSync(this.userDir)) {
@@ -49,12 +61,12 @@ export class FileManager {
       fs.writeFileSync(this.getFilePath(cardId), JSON.stringify(card, null, 2));
     }
   }
-
+  
   /**
-   * Método para cargar la colección de cartas
-   * Lo que hace es comprobar si existe el directorio del usuario, si no existe retorna un nuevo Map vacío
-   * Si existe el directorio, lee los archivos JSON de las cartas y las guarda en un Map
-   * @returns retorna un Map con la colección de cartas. los muestra en consola
+   * Método que carga la colección de cartas desde archivos JSON
+   * Lo que hace es comprobar si el directorio del usuario existe, si no existe retorna un Map vacío
+   * Luego lee los archivos JSON del directorio y los guarda en la colección
+   * @returns retorna la colección de cartas
    */
   public load(): Map<number, Card> {
     const collection = new Map<number, Card>();
