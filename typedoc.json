@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/*.ts"],
+  "entryPoints": ["src/**/*.ts"],
   "out": "./docs",
   "name": "Practica 9",
   "exclude": ["**/*.spec.ts"],
