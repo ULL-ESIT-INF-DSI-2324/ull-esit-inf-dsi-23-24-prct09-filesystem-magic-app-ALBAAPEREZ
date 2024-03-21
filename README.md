@@ -19,12 +19,13 @@
 3. [Antes de empezar](#3-antes-de-empezar)
 4. [Configuración de Istambul y coveralls](#4-configuracion-de-istambul-y-coveralls)
 5. [Principios SOLID](#5-principios-solid)
-6. GitHub Actions
-7. Modulos
-8. SonarCloud
-9. Yargs y Chalk
-10. API sincrona de Node.js
+6. [GitHub Actions](#6-github-actions)
+7. [Modulos](#7-módulos)
+8. [SonarCloud](#8-sonarcloud)
+9. [Yargs y Chalk](#9-yargs-y-chalk)
+10. [API sincrona de Node.js](#10-api-sincrona-de-nodejs)
 11. Ejercicio
+12. Modificación
 13. [Conclusiones](#9-conclusiones)
 
 [![Coveralls](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml)
@@ -37,9 +38,27 @@
 
 # 1. Introducción
 
+En esta práctica, se desarrollará una aplicación para coleccionistas de cartas Magic que permite almacenar información sobre una colección de cartas de un usuario en particular. La aplicación ofrece funcionalidades para añadir, modificar, eliminar, listar y leer la información asociada a cada carta. La información de las cartas se almacena como objetos JSON en el sistema de archivos del dispositivo donde se ejecuta la aplicación, y la interacción con la misma se realiza exclusivamente a través de la línea de comandos.
+
 ---
 
 # 2. Objetivos
+
+Los objetivos de esta práctica son:
+
+1. Desarrollar una aplicación que permita a los usuarios gestionar su colección de cartas Magic de forma eficiente.
+
+2. Implementar funcionalidades para añadir, modificar, eliminar, listar y leer la información de las cartas.
+
+3. Utilizar paquetes como `yargs` y `chalk` para facilitar la interacción con la línea de comandos y mejorar la presentación de la información.
+
+4. Hacer que la aplicación sea persistente, almacenando la información de las cartas en archivos JSON en el sistema de archivos.
+
+5. Garantizar la validación de los datos de entrada y el manejo adecuado de errores durante la ejecución de la aplicación.
+
+6. Documentar el código utilizando TypeDoc para mejorar su legibilidad y comprensión.
+
+7. Implementar pruebas unitarias que cubran los diferentes casos de uso de la aplicación, incluyendo la validación de entradas y el manejo de errores.
 
 ---
 
@@ -342,9 +361,6 @@ Por último, en nuestro directorio raíz crearemos el **.coveralls.yml** que con
 ```bash
 repo_token: xbwn8u45rB3Q44dE2hFjQT0kbhDmRPDuu
 ```
-
-[![Coverage Status](https://coveralls.io/repos/github/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct06-generics-solid-ALBAAPEREZ/badge.svg?branch=main)](https://coveralls.io/github/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct06-generics-solid-ALBAAPEREZ?branch=main)
-
 ---
 
 # 5. Principios SOLID.
@@ -391,3 +407,2654 @@ A lo largo de la revisión de los ejercicios, se destacarán las áreas donde lo
 
 ---
 
+# 6. GitHub Actions
+
+## ¿Qué es?
+***GitHub Actions*** es una característica integrada en GitHub que te permite automatizar, personalizar y ejecutar flujos de trabajo directamente desde tu repositorio. Con GitHub Actions, podemos crear flujos de trabajo que respondan a eventos específicos en tu repositorio, como solicitudes de extracción, confirmaciones de código, creación de problemas y mucho más.
+
+## Características
+Encontramos algunas características de esta herramienta:
+
+### Automatización de tareas
+Con GitHub Actions, puedes automatizar tareas repetitivas, como pruebas de código, compilaciones, despliegues, notificaciones y más.
+
+### Personalización
+Los flujos de trabajo de GitHub Actions son altamente personalizables. Puedes crear flujos de trabajo específicos para tus necesidades utilizando una variedad de acciones predefinidas o creando tus propias acciones personalizadas.
+
+### Eventos del repositorio
+Los flujos de trabajo pueden activarse en respuesta a una amplia gama de eventos en tu repositorio, lo que te permite ejecutar acciones específicas en función de las acciones de los colaboradores, el estado del código y otros factores.
+
+### Integración con el ecosistema de GitHub
+GitHub Actions se integra perfectamente con el ecosistema de GitHub, lo que te permite acceder a tus repositorios, problemas, solicitudes de extracción y otros datos directamente desde tus flujos de trabajo.
+
+## Configuración
+Para la configuración de las Github Actions deberemos meternos en el apartado de nuestro repositorio de **Actions** y seleccionar **Node.js** como flujo de trabajo. 
+Al hacer esto se nos creará un archivo denominado node.js.yml que contendrá lo siguiente:
+```typescript
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 19.x, 20.x, 21.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npm test
+  ```
+Este fichero será para las pruebas o tests como se indica en el nombre.
+Deberemos configurar más Actions para llevar a cabo toda la práctica. 
+Tras hacer un commit con los cambios comenzaremos a utilizar las GitHub Actions.
+Ahora, en visual podemos hacer la configuración de la Action de coveralls. Crearemos el fichero coveralls.yml que tendrá lo siguiente:
+  ```typescript
+  # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Coveralls
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cloning repo
+      uses: actions/checkout@v4
+    - name: Use Node.js 21.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 21.x
+    - name: Installing dependencies
+      run: npm ci
+    - name: Generating coverage information
+      run: npm run coverage
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2.2.3
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+  ```
+Hecho esto, cada vez que hagamos un git commit y un git push nos saldrán las Acciones.
+
+--- 
+
+# 7. Módulos
+En el desarrollo de aplicaciones en TypeScript, especialmente en entornos de pruebas con Mocha y herramientas de cobertura de código como nyc, es esencial configurar adecuadamente el manejo de módulos ESM (ECMAScript Modules). Esta configuración garantiza que nuestras pruebas sean efectivas y que los informes de cobertura reflejen con precisión el estado de nuestros módulos.
+
+**Paso 1: Instalación de c8.**
+
+Para comenzar, es necesario instalar la herramienta de cobertura **c8** como dependencia de desarrollo. Esto se logra ejecutando el siguiente comando:
+```bash
+npm i --save-dev c8
+```
+
+**Paso 2: Configuración del Script de Cobertura en package.json**
+
+Posteriormente, en el archivo **package.json**, ajustamos el script de cobertura para utilizar c8 en lugar de nyc. Esto se logra modificando la sección "scripts" como se muestra a continuación:
+```typescript
+{
+  "scripts": {
+    "coverage": "c8 npm test && c8 report --reporter=lcov"
+  }
+}
+```
+
+**Paso 3: Ajuste de las Pruebas para Módulos ESM**
+
+Es necesario modificar el archivo de configuración de Mocha, **.mocharc.json**, para utilizar el cargador ESM de ts-node al ejecutar las pruebas. Esto se logra configurando la propiedad "loader" como se muestra a continuación:
+```typescript
+{
+  "extension": [
+    "ts"
+  ],
+  "spec": "tests/**/*.spec.ts",
+  "loader": "ts-node/esm"
+}
+```
+
+**Paso 4: Importación de Módulos con Extensión .js**
+
+En los archivos de prueba **(*.spec.ts)**, cuando importamos módulos, es fundamental añadir la extensión .js a los nombres de los módulos importados. Esto es necesario para que funcionen correctamente con el cargador ESM. Un ejemplo de importación sería el siguiente:
+```typescript
+import { expect } from 'chai'; // Importamos el módulo con extensión .js
+import { myFunction } from '../src/myModule.js'; // Importamos nuestro módulo con extensión .js
+```
+
+Con esta configuración, aseguramos que nuestras pruebas sean efectivas, generamos informes precisos de cobertura y garantizamos que nuestros módulos ESM se manejen correctamente en el entorno de prueba.
+
+
+---
+# 8. SonarCloud
+
+### ¿Qué es SonarCloud?
+SonarCloud es una plataforma de análisis estático de código diseñada para mejorar la calidad del software. Utiliza técnicas de análisis estático para identificar y reportar problemas de calidad del código, como errores, vulnerabilidades de seguridad, malas prácticas y duplicación de código.
+
+### Características de SonarCloud:
+
+- **Análisis de código estático:** SonarCloud examina el código fuente de tu proyecto en busca de posibles problemas de calidad, proporcionando una visión detallada de la salud del código.
+
+- **Integración continua:** Puedes integrar SonarCloud en tu proceso de integración continua para automatizar el análisis del código cada vez que se realice un cambio, lo que te permite detectar problemas de calidad de forma proactiva.
+
+- **Métricas y seguimiento:** SonarCloud ofrece métricas detalladas sobre la calidad del código y su evolución a lo largo del tiempo, lo que te permite realizar un seguimiento del progreso y tomar medidas para mejorar la calidad del código.
+
+- **Comentarios y recomendaciones:** SonarCloud proporciona comentarios detallados y recomendaciones para cada problema identificado, ayudándote a comprender la naturaleza del problema y cómo solucionarlo de manera efectiva.
+
+- **Integración con GitHub:** SonarCloud se integra estrechamente con GitHub, lo que te permite ver los resultados del análisis directamente en tus solicitudes de extracción y gestionar la calidad del código desde el mismo entorno en el que trabajas.
+
+
+## Configuración
+Para la configuración de **SonarCloud** lo que deberemos hacer es lo siguiente:
+
+**Paso 1**: Iniciamos sesión en la Página de SonarCloud.
+
+**Paso 2**: Añadimos un nuevo proyecto. En nuestro caso seleccionamos la organizacion del curso de dsi y localizamos nuestro repositorio que anteriormente debe estar en **Public**.
+
+**Paso 3**: Al comenzar un nuevo proyecto con el repositorio seleccionado deberemos meternos dentro de este y seleccionar **Analysis Method**. Dentro de esto, desactivaremos el botón de **Automatic Analysis** y nos meteremos a la opción de **GitHub Actions**.
+
+**Paso 4**: Dentro de los Actions de esta página copiaremos el SONAR_TOKEN y el valor secreto bajo este. Seguidamente, nos dirigiremos a GitHub a nuestro repositorio y en el apartado de settings -> secretos deberemos introducir estos datos copiados anteriormente. 
+
+**Paso 5**: Hecho esto, nos dirigimos a la página de antes de SonarCloud y eligiremos la opción de ts para typscript. Se nos desplegará los siguiente:
+
+```typescript
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  ``` 
+
+Esto lo copiaremos y haremos lo mismo que hicimos anteriormente con las Actions de Tests y Coveralls. Crear un fichero sonarcloud.yml y poner:
+```typescript
+name: Sonar-Cloud 
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Using Node.js 21.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.x
+      - name: Installing dependencies
+        run: npm ci
+      - name: Generating coverage report
+        run: npm run coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+Para finliazar crearemos en la raíz del directorio un **sonar-project.properties** que tendra:
+```typescript
+sonar.projectKey=ULL-ESIT-INF-DSI-2324_ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ
+sonar.organization=ull-esit-inf-dsi-2324
+
+# This is the name and version displayed in the SonarCloud UI.
+#sonar.projectName=ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ
+#sonar.projectVersion=1.0
+
+
+# Path is relative to the sonar-project.properties file. Replace "\" by "/" on Windows.
+#sonar.sources=.
+
+# Encoding of the source code. Default is default system encoding
+#sonar.sourceEncoding=UTF-8
+```
+
+Hecho esto en nuestro repositorio, haremos git add, git commit y un push y si todo ha ido bien comenzará a funcionar todo sin problemas.
+
+
+--- 
+
+# 9. Yargs y Chalk
+
+En el contexto del desarrollo de aplicaciones de línea de comandos, los paquetes **yargs y chalk** desempeñan roles fundamentales para el manejo de argumentos y la presentación de información de manera legible y atractiva. A continuación, se detallan las características y el uso de cada uno de estos paquetes:
+
+## Chalk: Estilización de Texto en Consola
+
+El paquete Chalk se utiliza para agregar estilos y colores a la salida de texto en la consola, permitiendo mejorar la legibilidad y la presentación de la información. Algunas características importantes incluyen:
+
+**Estilos y Colores**: Chalk proporciona una amplia variedad de estilos y colores que pueden aplicarse al texto, como negrita, subrayado, colores de fondo, entre otros.
+
+**API Encadenada**: Permite encadenar varios estilos y colores para aplicar múltiples efectos a un texto.
+
+**Facilidad de Uso**: La sintaxis simple y clara hace que sea fácil aplicar estilos y colores a diferentes partes del texto.
+
+
+Instalaremos chalk mediante el comando:
+```bash
+npm i chalk
+```
+
+La última versión se trata de un módulo ESM, por lo que tendremos que modificar el fichero package.json para establecer la propiedad type al valor module:
+```typescript
+{
+  "name": "ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-albaaperez",
+  "version": "1.0.0",
+  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/T5K9tzcv)",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "c8 mocha",
+    "coverage": "c8 npm test && c8 report --reporter=lcov",
+    "doc": "typedoc",
+    "start": "tsc-watch --onSuccess \"node dist/MAGICAPP/index.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.3.12",
+    "@types/mocha": "^10.0.6",
+    "@types/sinon": "^17.0.3",
+    "@types/yargs": "^17.0.32",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "c8": "^9.1.0",
+    "chai": "^4.4.1",
+    "eslint": "^8.57.0",
+    "mocha": "^10.3.0",
+    "nyc": "^15.1.0",
+    "sinon": "^17.0.1",
+    "ts-node": "^10.9.2",
+    "tsc-watch": "^6.0.4",
+    "typedoc": "^0.25.12"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2",
+    "yargs": "^17.7.2"
+  }
+}
+```
+Además, en el tsconfig deberemos especificar la propiedad module, asígnándole el valor node16.
+
+Un ejemplo de uso de chalk es el siguiente con diferentes estilos y colores:
+```typescript
+import chalk from "chalk";
+
+const log = console.log;
+
+// Estilos y colores simples
+log(chalk.blue("Hello") + " World" + chalk.red("!"));
+
+// Combinación de estilos y colores
+log(chalk.blue.bgRed.bold("Hello world!"));
+
+// Aplicación a múltiples argumentos
+log(chalk.blue("Hello", "World!", "Foo", "bar", "biz", "baz"));
+
+// Anidamiento de estilos
+log(chalk.red("Hello", chalk.underline.bgBlue("world") + "!"));
+```
+
+
+## Yargs
+El paquete **Yargs** se utiliza para analizar los argumentos pasados a un programa desde la línea de comandos, facilitando la creación de interfaces de usuario interactivas y robustas. Algunas características importantes incluyen:
+
+**Gestión de Comandos**: Permite definir y gestionar diferentes comandos, cada uno con sus opciones y manejadores correspondientes.
+
+**Validación de Argumentos**: Ofrece opciones para especificar el tipo y la obligatoriedad de los argumentos, facilitando la validación de la entrada del usuario.
+
+**API Encadenada**: Permite encadenar varias configuraciones de comandos y opciones para una fácil configuración.
+
+**Integración con TypeScript**: Se incluyen los tipos de TypeScript para un desarrollo más seguro y sin errores.
+
+Para el comienzo de su utilización deberemo instalarlo con los siguientes comandos:
+```bash
+npm i yargs
+npm i --save-dev @types/yargs
+```
+
+Un ejemplo de uso del yargs sería el siguiente:
+```typescript
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
+yargs(hideBin(process.argv))
+  .command('add', 'Adds a card to the collection', {
+    id: {
+      description: 'Card ID',
+      type: 'number',
+      demandOption: true
+    }
+  }, (argv) => {
+    console.log(argv.id);
+  })
+  .help()
+  .argv;
+```
+
+
+--- 
+
+# 10. API sincrona de Node.js
+
+La **API síncrona de Node.js** proporciona métodos para realizar operaciones de lectura y escritura en el sistema de archivos de manera síncrona, lo que significa que las operaciones bloquean la ejecución del programa hasta que se completen. A continuación, se detallan las características y ejemplos de uso de esta API:
+
+Características Principales:
+
+**Síncrono**: Los métodos de la API síncrona bloquean la ejecución del programa hasta que se complete la operación de archivo, lo que puede simplificar el flujo de control en algunas situaciones.
+
+**Operaciones de Archivos**: Permite realizar operaciones comunes en archivos, como lectura, escritura, eliminación y modificación, de manera directa y sencilla.
+
+**Manejo de Errores**: Proporciona mecanismos integrados para manejar errores durante las operaciones de archivo, lo que garantiza una mayor robustez en las aplicaciones.
+
+
+Un ejemplo de uso:
+```typescript
+import fs from 'fs';
+
+// Ejemplo de lectura sincrónica de un archivo
+try {
+  const data = fs.readFileSync('archivo.txt', 'utf-8');
+  console.log(data);
+} catch (err) {
+  console.error('Error al leer el archivo:', err);
+}
+
+// Ejemplo de escritura sincrónica en un archivo
+try {
+  fs.writeFileSync('archivo.txt', 'Contenido del archivo', 'utf-8');
+  console.log('Archivo escrito exitosamente');
+} catch (err) {
+  console.error('Error al escribir en el archivo:', err);
+}
+
+// Ejemplo de eliminación sincrónica de un archivo
+try {
+  fs.unlinkSync('archivo.txt');
+  console.log('Archivo eliminado exitosamente');
+} catch (err) {
+  console.error('Error al eliminar el archivo:', err);
+}
+```
+
+# 11. EJERCICIO
+
+## Enunciado
+Requisitos de la Aplicación:
+
+La aplicación deberá permitir que múltiples usuarios interactúen con ella, pero no simultáneamente.
+
+En concreto, una carta se describirá por los siguientes elementos mínimos de información que deberán ser almacenados:
+
+- **ID:** Debe ser un valor numérico único que identifica la carta.
+- **Nombre:** Debe ser una cadena de caracteres con el nombre de la carta.
+- **Coste de maná:** Es un valor numérico con la suma de todos los símbolos de maná necesarios para poder lanzar la carta.
+- **Color:** Debe ser un enumerado: blanco, azul, negro, rojo, verde, incoloro o multicolor. Indica el color de los símbolos de maná presentes en la carta.
+- **Línea de tipo:** Debe ser un enumerado con valores como, por ejemplo, Tierra, Criatura, Encantamiento, Conjuro, Instantáneo, Artefacto o Planeswalker.
+- **Rareza:** Es un enumerado: común, infrecuente, rara o mítica.
+- **Texto de reglas:** Debe ser una cadena de caracteres con la descripción de los efectos de la carta y cualquier regla especial que tenga.
+- **Fuerza/Resistencia:** Son dos valores numéricos, que sólo se incluyen en aquellas cartas de tipo Criatura, e indican la fuerza y resistencia, respectivamente.
+- **Marcas de lealtad:** Es un valor numérico indicando cuánta lealtad tiene un Planeswalker, por lo que sólo se incluye en dicho tipo de cartas.
+- **Valor de mercado:** Debe ser un valor numérico indicando el valor de la carta en el mercado.
+
+Cada usuario tendrá su colección de cartas, con la que podrá llevar a cabo las siguientes operaciones:
+
+- **Añadir una carta a la colección:** Antes de añadir una carta a la colección se debe comprobar si ya existe una carta con el mismo ID. En caso de que así fuera, deberá mostrarse un mensaje de error por la consola. En caso contrario, se añadirá la nueva carta a la colección y se mostrará un mensaje informativo por la consola.
+- **Modificar una carta de la colección:** Antes de modificar una carta, previamente se debe comprobar si ya existe una carta con el ID de la carta a modificar en la colección. Si existe, se procede a su modificación y se emite un mensaje informativo por la consola. En caso contrario, debe mostrarse un mensaje de error por la consola.
+- **Eliminar una carta de la lista:** Antes de eliminar una carta, previamente se debe comprobar si existe una carta con el ID de la carta a eliminar en la lista. Si existe, se procede a su eliminación y se emite un mensaje informativo por la consola. En caso contrario, debe mostrarse un mensaje de error por la consola.
+- **Listar las cartas existentes en una colección:** En este caso, deberá mostrarse la información asociada a cada carta existente en la colección por la consola. Además, deberá utilizar el paquete chalk para mostrar la información del campo color de cada carta, en el color correspondiente.
+- **Mostrar la información de una carta concreta existente en la colección:** Antes de mostrar la información de la carta, se debe comprobar que en la colección existe una carta cuyo ID sea el de la carta a mostrar. Si existe, se mostrará toda su información, incluyendo su color a través del uso del paquete chalk. En caso contrario, se mostrará un mensaje de error por la consola.
+
+Todos los mensajes informativos se mostrarán con color verde, mientras que los mensajes de error se mostrarán con color rojo. Use el paquete chalk para ello.
+
+Hacer persistente la colección de cartas de cada usuario. Aquí es donde entra en juego el uso de la API síncrona de Node.js para trabajar con el sistema de ficheros:
+
+- **Guardar cada carta de la colección en un fichero independiente con formato JSON:** Los ficheros JSON correspondientes a las cartas de un usuario concreto deberán almacenarse en un directorio con el nombre de dicho usuario.
+- **Cargar las cartas desde los diferentes ficheros con formato JSON almacenados en el directorio del usuario correspondiente.**
+
+Un usuario solo puede interactuar con la aplicación a través de la línea de comandos. Los diferentes comandos, opciones de los mismos, así como manejadores asociados a cada uno de ellos deben gestionarse mediante el uso del paquete yargs.
+
+
+## Código propuesto.
+Al ejercicio propuesto se realizó el siguiente código divido en diferentes ficheros para organizarlo.
+
+Se creo el directorio **MAGICAPP** dentro de src para localizar todos los ficheros relacionados a la práctica. 
+
+### Card.ts
+```typescript
+import { Color } from "./EnumerationColor.js";
+import { LineType } from "./EnumerationLineType.js";
+import { Rarity } from "./EnumerationRarity.js";
+
+/**
+ * Interfaz para la información de las cartas
+ * Esta interfaz se utiliza para definir la estructura de los datos que se van a utilizar en la aplicación
+ * @param id: number - Identificador de la carta
+ * @param name: string - Nombre de la carta
+ * @param manaCost: number - Costo de mana de la carta
+ * @param color: string - Color de la carta
+ * @param cardType: string - Tipo de carta
+ * @param rarity: Rarity, es una enumeracion
+ * @param rulesText: string - Texto de reglas de la carta
+ * @param power: number - Poder de la carta
+ * @param toughness: number - Resistencia de la carta
+ * @param loyalty: number - Lealtad de la carta
+ * @param marketValue: number - Valor de mercado de la carta
+ */
+export interface Card {
+  id: number;
+  name: string;
+  manaCost: number;
+  color: Color;
+  cardType: LineType;
+  rarity: Rarity;
+  rulesText: string;
+  power?: number; // SOLO se incluyen en aquellas cartas de tipo Criatura
+  toughness?: number; // solo se incluyen en aquellas cartas de tipo Criatura
+  loyalty?: number; // solo Planeswalker
+  marketValue: number;
+}
+```
+
+### User.ts
+```typescript
+import chalk from 'chalk';
+import { Card } from './Card.js';
+import { FileManager } from './FileManager.js';
+import * as fs from 'fs';
+import * as path from 'path';
+
+/**
+ * Clase para la colección de cartas
+ * Esta clase se utiliza para gestionar la colección de cartas de un usuario
+ * @param collection: Card[] - Colección de cartas
+ * @param user: string - Nombre de usuario
+ * @param fileManager: FileManager - Instancia de la clase FileManager
+ * @param loadCollection: void - Cargar la colección de cartas
+ * @param addCard: void - Añadir una carta a la colección
+ * @param updateCard: void - Actualizar una carta de la colección
+ * @param removeCard: void - Eliminar una carta de la colección
+ * @param listCards: void - Listar las cartas de la colección
+ * @param readCard: void - Leer la información de una carta
+ */
+export class CardCollection {
+  /**
+   * Colección de cartas del usuario
+   * Es privado y solo se puede acceder desde la clase
+   */
+  private collection: Card[] = [];
+
+  /**
+   * Usuario propietario de la colección
+   * Es privado y solo se puede acceder desde la clase
+   */
+  private user: string;
+
+  /**
+   * Instancia de la clase FileManager
+   * Es privado y solo se puede acceder desde la clase
+   */
+  private fileManager: FileManager;
+
+  /**
+   * Constructor de la clase CardCollection
+   * Se encarga de inicializar el usuario y la instancia de FileManager
+   * Luego carga la colección de cartas
+   */
+  constructor(user: string) {
+    this.user = user;
+    this.fileManager = new FileManager(user);
+    this.loadCollection(); 
+  }
+
+  /**
+   * Método que retorna el color en formato hexadecimal.
+   * Suponemos que el gris es el color incoloro y el magenta es el multicolor.
+   * Si el color no se encuentra en el mapa de colores será negro.
+   * @param colorName nombre del color
+   * @returns retorna el color en formato hexadecimal
+   */
+  getColorCode(colorName: string): string {
+    const colorMap: { [key: string]: string } = {
+      blanco: '#FFFFFF',
+      azul: '#0000FF',
+      negro: '#000000',
+      rojo: '#FF0000',
+      verde: '#00FF00',
+      amarillo: '#FFFF00',
+      naranja: '#FFA500',
+      morado: '#800080',
+      rosa: '#FFC0CB',
+      marron: '#A52A2A',
+      incoloro: '#CCCCCC', 
+      multicolor: '#FF00FF'
+    };
+    return colorMap[colorName.toLowerCase()] || '#000000'; 
+  }
+    
+  /**
+   * Metodo que se encarga de cargar la collecion
+   * desde los ficheros.
+   */
+  private loadCollection(): void {
+    this.collection = Array.from(this.fileManager.load().values());
+  }
+
+  /**
+   * Método para añadir una carta a la colección
+   * Este método añade una nueva carta a la colección del usuario. Si la carta ya existe en la colección,
+   * se muestra un mensaje de error. Si la carta no existe, se añade a la colección y se guarda en el sistema de archivos.
+   * @param card La carta que se va a añadir a la colección.
+   * @returns void no devuelve nada
+   */
+  public addCard(card: Card): void {
+    // Si ya existe en la coleccion
+    if (this.collection.some(c => c.id === card.id)) {
+      console.log(chalk.red.bold(`La carta con ID ${card.id} ya existe en la colección de ${this.user}.`));
+    } else {
+      // si no existe la añadimos
+      this.collection.push(card);
+      const filePath = this.fileManager.getFilePath(card.id);
+      // si no existe el directorio lo creamos
+      if (!fs.existsSync(path.dirname(filePath))) {
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      }
+      // guardamos la carta en el sistema de archivos
+      fs.writeFileSync(filePath, JSON.stringify(card, null, 2));
+      console.log(chalk.green.bold(`Nueva carta añadida a la colección de ${this.user}.`));
+    }
+  }
+
+  /**
+   * Método para actualizar una carta en la colección
+   * Este método actualiza una carta en la colección del usuario. Si la carta no existe en la colección,
+   * se muestra un mensaje de error. Si la carta existe, se actualiza en la colección y se guarda en el sistema de archivos.
+   * @param updatedCard La carta actualizada que se va a añadir a la colección.
+   * @returns void no devuelve nada
+   */
+  public updateCard(updatedCard: Card): void {
+    const cardIndex = this.collection.findIndex(c => c.id === updatedCard.id);
+    if (cardIndex === -1) {
+      console.log(chalk.red.bold(`La carta con ID ${updatedCard.id} no existe en la colección de ${this.user}.`));
+    } else {
+      this.collection[cardIndex] = updatedCard;
+      fs.writeFileSync(this.fileManager.getFilePath(updatedCard.id), JSON.stringify(updatedCard, null, 2));
+      console.log(chalk.green.bold(`Carta actualizada en la colección de ${this.user}.`));
+    }
+  }
+
+  /**
+   * Método para eliminar una carta de la colección
+   * Este método elimina una carta de la colección del usuario. Si la carta no existe en la colección,
+   * se muestra un mensaje de error. Si la carta existe, se elimina de la colección y 
+   * se borra del sistema de archivos. 
+   * @param id El identificador de la carta que se va a eliminar de la colección.
+   * @returns void no devuelve nada
+   */
+  public removeCard(id: number): void {
+    // Buscamos la carta en la coleccion
+    const cardIndex = this.collection.findIndex(c => c.id === id);
+    // Si no existe mostramos un mensaje de error
+    if (cardIndex === -1) {
+      console.log(chalk.red.bold(`La carta con ID ${id} no existe en la colección de ${this.user}.`));
+    } else {
+      // Si existe la eliminamos
+      this.collection.splice(cardIndex, 1);
+      const filePath = this.fileManager.getFilePath(id);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(chalk.green.bold(`Carta eliminada de la colección de ${this.user}.`));
+      } else {
+        console.log(chalk.red.bold(`El archivo de la carta con ID ${id} no existe.`));
+      }
+    }
+  }
+
+  /**
+   * Método para listar las cartas de la colección
+   * Este método muestra por consola la información de todas las cartas de la colección del usuario.
+   * Muestra cada uno de los atributos de la carta, como el nombre, el coste de mana, el color, 
+   * el tipo de carta, etc. Aqui hacemos uso del metodo para obtener el color en hexadecimal.
+   * @returns void no devuelve nada
+   */
+  public listCards(): void {
+    console.log(chalk.bold(`\nColección de cartas de ${this.user}\n`));
+    this.collection.forEach(card => {
+      const colorCode = this.getColorCode(card.color);
+      console.log(chalk.bold.italic(chalk.white(`ID: ${card.id}`)));
+      console.log(chalk.bold.italic(chalk.cyan(`Nombre: ${card.name}`)));
+      console.log(chalk.bold.italic(`Coste de Mana: ${card.manaCost}`));
+      console.log(chalk.bold.italic(`Color: ${chalk.hex(colorCode)(card.color)}`));
+      console.log(chalk.bold.italic(`Tipo de Línea: ${card.cardType}`));
+      console.log(chalk.bold.italic(`Rareza: ${card.rarity}`));
+      console.log(chalk.bold.italic(`Texto de Reglas: ${card.rulesText}`));
+      if (card.cardType === 'Criatura' && card.power && card.toughness) {
+        console.log(chalk.bold.italic(`Fuerza/Resistencia: ${card.power}/${card.toughness}`));
+      }
+      if (card.loyalty && card.cardType === 'Planeswalker') {
+        console.log(chalk.bold.italic(`Marcas de Lealtad: ${card.loyalty}`));
+      }
+      console.log(chalk.bold.italic(`Valor de Mercado: ${card.marketValue}`));
+      console.log("");
+    });
+  }
+
+  /**
+   * Método para leer la información de una carta
+   * Este método muestra por consola la información de una carta de la colección del usuario.
+   * Muestra cada uno de los atributos de la carta, como el nombre, el coste de mana, el color,
+   * el tipo de carta, etc. Aqui hacemos uso del metodo para obtener el color en hexadecimal.
+   * Si la carta no existe en la colección, se muestra un mensaje de error.
+   * @param id El identificador de la carta que se va a leer.
+   * @returns void no devuelve nada
+   */
+  public readCard(id: number): void {
+    const card = this.collection.find(c => c.id === id);
+    if (!card) {
+      console.log(chalk.red.bold(`La carta con ID ${id} no existe en la colección de ${this.user}.`));
+    } else {
+      const colorCode = this.getColorCode(card.color);
+      console.log(chalk.bold.italic(`\nInformación de la carta con ID ${id}\n`));
+      console.log(chalk.bold.italic(chalk.cyan(`Nombre: ${card.name}`)));
+      console.log(chalk.bold.italic(`Coste de Mana: ${card.manaCost}`));
+      console.log(chalk.bold.italic(`Color: ${chalk.hex(colorCode)(card.color)}`));
+      console.log(chalk.bold.italic(`Tipo de Carta: ${card.cardType}`));
+      console.log(chalk.bold.italic(`Rareza: ${card.rarity}`));
+      console.log(chalk.bold.italic(`Texto de Reglas: ${card.rulesText}`));
+      if (card.cardType === 'Criatura' && card.power && card.toughness) {
+        console.log(chalk.bold.italic(`Fuerza/Resistencia: ${card.power}/${card.toughness}`));
+      }
+      if (card.loyalty && card.cardType === 'Planeswalker') {
+        console.log(chalk.bold.italic(`Marcas de Lealtad: ${card.loyalty}`));
+      }
+      console.log(chalk.bold.italic(`Valor de Mercado: ${card.marketValue}`));
+    }
+  }
+}
+```
+
+###  File Manager.
+
+```typescript
+import fs from 'fs';
+import { Card } from './Card.js';
+import * as path from 'path';
+
+/**
+ * Clase para la gestión de archivos
+ * Esta clase se utiliza para guardar y cargar la información de las cartas en archivos JSON
+ * Cada usuario tiene su propio directorio y cada carta se guarda en un archivo JSON
+ * @param username: string - Nombre de usuario
+ * @param userDir: string - Directorio del usuario
+ * @param getFilePath: string - Ruta del archivo
+ * @param save: void - Guardar la colección de cartas en archivos JSON
+ * @param load: Map<number, Card> - Cargar la colección de cartas desde archivos JSON
+ * @param collection: Map<number, Card> - Colección de cartas
+ */
+export class FileManager {
+  /**
+   * Directorio del usuario, donde se guardan los archivos JSON
+   * Es privado y solo se puede acceder desde la clase
+   */
+  private readonly userDir: string;
+
+  /**
+   * Constructor de la clase FileManager
+   * Se encarga de inicializar el directorio del usuario según el nombre de usuario
+   * @param username username: string - Nombre de usuario
+   */
+  constructor(private username: string) {
+    this.userDir = `./src/MAGICAPP/users/${username}`;
+  }
+  
+  /**
+   * Método que retorna el directorio del usuario
+   * @returns Retorna el directorio del usuario 
+   */
+  public getUserDir(): string {
+    return this.userDir;
+  }
+
+  /**
+   * Retorna la ruta del archivo de la carta
+   * Lo que hace es concatenar el directorio del usuario con el nombre del archivo
+   * @param cardId cardId: number - Identificador de la carta
+   * @returns retorna la ruta del archivo
+   */
+  public getFilePath(cardId: number): string {
+    return path.join(this.userDir, `card${cardId}.json`);
+  }
+
+  /**
+   * Método que guarda la colección de cartas en archivos JSON
+   * Lo que hace es comprobar si el directorio del usuario existe, si no existe lo crea
+   * Luego recorre la colección de cartas y guarda cada carta en un archivo JSON
+   * @param collection collection: Map<number, Card> - Colección de cartas
+   */
+  public save(collection: Map<number, Card>): void {
+    if (!fs.existsSync(this.userDir)) {
+      fs.mkdirSync(this.userDir, { recursive: true });
+    }
+    for (const [cardId, card] of collection) {
+      fs.writeFileSync(this.getFilePath(cardId), JSON.stringify(card, null, 2));
+    }
+  }
+  
+  /**
+   * Método que carga la colección de cartas desde archivos JSON
+   * Lo que hace es comprobar si el directorio del usuario existe, si no existe retorna un Map vacío
+   * Luego lee los archivos JSON del directorio y los guarda en la colección
+   * @returns retorna la colección de cartas
+   */
+  public load(): Map<number, Card> {
+    const collection = new Map<number, Card>();
+    if (fs.existsSync(this.userDir)) {
+      const files = fs.readdirSync(this.userDir);
+      for (const file of files) {
+        const data = fs.readFileSync(`${this.userDir}/${file}`, 'utf-8');
+        const card = JSON.parse(data) as Card;
+        collection.set(card.id, card);
+      }
+    }
+    return collection;
+  }
+}
+```
+
+### EnumerationColor.ts
+```typescript
+/**
+ * Enumeración de colores para las cartas
+ * Esta enumeración se utiliza para definir los colores de las cartas
+ * Cada carta tiene un color que puede ser blanco, azul, 
+ * negro, rojo, verde, incoloro, incluso multicolor...
+ */
+export enum Color {
+  Blanco = 'Blanco',
+  Azul = 'Azul',
+  Negro = 'Negro',
+  Rojo = 'Rojo',
+  Verde = 'Verde',
+  Incoloro = 'Incoloro',
+  Multicolor = 'Multicolor',
+  Amarillo = 'Amarillo',
+  Morado = 'Morado',
+  Rosa = 'Rosa',
+  Marron = 'Marron',
+  Naranja = 'Naranja'
+}
+```
+
+### EnumerationLineType.ts
+```typescript
+/**
+ * Enumeración de los tipos de cartas
+ * Las cartas pueden ser de diferentes tipos.
+ */
+export enum LineType {
+  Tierra = 'Tierra',
+  Criatura = 'Criatura',
+  Encantamiento = 'Encantamiento',
+  Conjuro = 'Conjuro',
+  Instantáneo = 'Instantáneo',
+  Artefacto = 'Artefacto',
+  Planeswalker = 'Planeswalker',
+}
+```
+
+### EnumerationRarity.ts
+```typescript
+/**
+ * Enumeración de las rarezas de las cartas
+ * Las cartas pueden ser de diferentes tipos de rareza
+ * Hay 4 tipos de rarezas: comun, infrecuente, rara y mítica.
+ */
+export enum Rarity {
+  Comun = 'Comun',
+  Infrecuente = 'Infrecuente',
+  Rara = 'Rara',
+  Mítica = 'Mítica',
+}
+```
+### index.ts
+```typescript
+import yargs from 'yargs';
+import { Card } from './Card.js';
+import { hideBin } from 'yargs/helpers';
+import { CardCollection } from './User.js'; 
+import { Color } from './EnumerationColor.js';
+import { LineType } from './EnumerationLineType.js';
+import { Rarity } from './EnumerationRarity.js';
+
+/**
+ * Comando para gestionar la colección de cartas
+ * Se pueden añadir, listar, actualizar, leer y eliminar cartas de la colección
+ * Los comandos disponibles son:
+ * - add: Añade un nuevo usuario a la colección
+ * - list: Lista todos los usuarios de la colección
+ * - update: Actualiza un usuario de la colección
+ * - read: Lee un usuario de la colección
+ * - remove: Elimina un usuario de la colección
+ * Para más información sobre los comandos, ejecutar el comando --help
+ */
+yargs(hideBin(process.argv))
+	/**
+   * Comando para añadir un nuevo usuario a la colección
+   * Por parámetros se deben indicar el nombre del usuario, el ID, el nombre, 
+   * el coste de mana, el color, el tipo de línea, la rareza, el texto de reglas y el valor de mercado.
+   * @param user: string - Nombre del usuario
+   * @param id: number - ID del usuario
+   * @param name: string - Nombre del usuario
+   * @param manaCost: number - Coste de mana
+   * @param color: string - Color del usuario
+   * @param lineType: string - Tipo de línea del usuario
+   * @param rarity: string - Rareza del usuario
+   * @param rulesText: string - Texto de reglas del usuario
+   * @param power: number - Poder del usuario
+   * @param toughness: number - Resistencia del usuario
+   * @param loyaltyMarks: number - Marcas de lealtad del usuario
+   * @param marketValue: number - Valor de mercado del usuario
+   */
+  .command({
+    command: 'add',
+    describe: 'Añade un nuevo usuario a la colección',
+    builder: {
+      user: { describe: 'Nombre del usuario', demandOption: true, type: 'string' },
+      id: { describe: 'ID del usuario', demandOption: true, type: 'number' },
+      name: { describe: 'Nombre del usuario', demandOption: true, type: 'string' },
+      manaCost: { describe: 'Coste de mana', demandOption: true, type: 'number' },
+      color: { describe: 'Color del usuario', demandOption: true, type: 'string', choices: Object.values(Color) },
+      lineType: { describe: 'Tipo de línea del usuario', demandOption: true, type: 'string', choices: Object.values(LineType) },
+      rarity: { describe: 'Rareza del usuario', demandOption: true, type: 'string', choices: Object.values(Rarity) },
+      rulesText: { describe: 'Texto de reglas del usuario', demandOption: true, type: 'string' },
+      power: { describe: 'Poder del usuario', type: 'array', default: [] },
+			toughness: { describe: 'Resistencia del usuario', type: 'array', default: [] },
+      loyaltyMarks: { describe: 'Marcas de lealtad del usuario', type: 'number' },
+      marketValue: { describe: 'Valor de mercado del usuario', demandOption: true, type: 'number' }
+    },
+    // esto es lo que se ejecuta cuando se llama al comando
+    handler(argv) {
+      const collection = new CardCollection(argv.user);
+      const user: Card = {
+        id: argv.id,
+        name: argv.name,
+        manaCost: argv.manaCost,
+        color: argv.color,
+        cardType: argv.lineType,
+        rarity: argv.rarity,
+        rulesText: argv.rulesText,
+        power: argv.power,
+				toughness: argv.toughness,
+        loyalty: argv.loyaltyMarks,
+        marketValue: argv.marketValue
+      };
+      collection.addCard(user);
+    }
+  })
+	/**
+   * Comando para listar todos los usuarios de la colección
+   * Por parámetros se debe indicar el nombre del usuario y se listan todos los usuarios de la colección
+   * @param user: string - Nombre del usuario
+   * @returns retorna la lista de usuarios de la colección
+   */
+  .command({
+    command: 'list',
+    describe: 'Lista todos los usuarios de la colección',
+    builder: {
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' }
+    },
+    // esto es lo que se ejecuta cuando se llama al comando
+    handler(argv) {
+      const collection = new CardCollection(argv.user);
+      collection.listCards();
+    }
+  })
+	/**
+   * Comando para actualizar un usuario de la colección
+   * Por parámetros se deben indicar el nombre del usuario, el ID y los campos a actualizar
+   * @param user: string - Nombre del usuario
+   * @param id: number - ID del usuario
+   * @param name: string - Nombre del usuario
+   * @param manaCost: number - Coste de mana
+   * @param color: string - Color del usuario
+   * @param lineType: string - Tipo de línea del usuario
+   * @param rarity: string - Rareza del usuario
+   * @param rulesText: string - Texto de reglas del usuario
+   * @param power: number - Poder del usuario
+   * @param toughness: number - Resistencia del usuario
+   * @param loyaltyMarks: number - Marcas de lealtad del usuario
+   * @param marketValue: number - Valor de mercado del usuario
+   */
+  .command({
+    command: 'update',
+    describe: 'Actualiza un usuario de la colección',
+    builder: {
+      user: { describe: 'Nombre del usuario', demandOption: true, type: 'string' },
+      id: { describe: 'ID del usuario', demandOption: true, type: 'number' },
+      name: { describe: 'Nombre del usuario', type: 'string' },
+      manaCost: { describe: 'Coste de mana', type: 'number' },
+      color: { describe: 'Color del usuario', type: 'string', choices: Object.values(Color) },
+      lineType: { describe: 'Tipo de línea del usuario', type: 'string', choices: Object.values(LineType) },
+      rarity: { describe: 'Rareza del usuario', type: 'string', choices: Object.values(Rarity) },
+      rulesText: { describe: 'Texto de reglas del usuario', type: 'string' },
+      power: { describe: 'Poder  del usuario', type: 'array', default: [] },
+			toughness: { describe: 'Resistencia del usuario', type: 'array', default: [] },
+      loyaltyMarks: { describe: 'Marcas de lealtad del usuario', type: 'number' },
+      marketValue: { describe: 'Valor de mercado del usuario', type: 'number' }
+    },
+    // esto se ejecuta cuando se llama al comando
+    handler(argv) {
+      const collection = new CardCollection(argv.user);
+      const user: Card = {
+        id: argv.id,
+        name: argv.name,
+        manaCost: argv.manaCost,
+        color: argv.color,
+        cardType: argv.lineType,
+        rarity: argv.rarity,
+        rulesText: argv.rulesText,
+        power: argv.power,
+				toughness: argv.toughness,
+        loyalty: argv.loyaltyMarks,
+        marketValue: argv.marketValue
+      };
+      collection.updateCard(user);
+    }
+  }) 
+	/**
+   * Comando para leer un usuario de la colección
+   * Por parámetros se deben indicar el nombre del usuario y el ID del usuario
+   * @param user: string - Nombre del usuario
+   * @param id: number - ID del usuario
+   * @returns retorna el usuario de la colección
+   */
+  .command({
+    command: 'read',
+    describe: 'Lee un usuario de la colección',
+    builder: {
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' },
+      id: { describe: 'ID del usuario', 
+      demandOption: true, 
+      type: 'number' }
+    },
+    handler(argv) {
+      const collection = new CardCollection(argv.user);
+      collection.readCard(argv.id);
+    }
+  })
+	/**
+   * Comando para eliminar un usuario de la colección
+   * Por parámetros se deben indicar el nombre del usuario y el ID del usuario
+   * @param user: string - Nombre del usuario
+   * @param id: number - ID del usuario
+   * @returns retorna el usuario eliminado de la colección
+   */
+  .command({
+    command: 'remove',
+    describe: 'Elimina un usuario de la colección',
+    builder: {
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' },
+      id: { describe: 'ID del usuario', 
+      demandOption: true, 
+      type: 'number' }
+    },
+    handler(argv) {
+      const collection = new CardCollection(argv.user);
+      collection.removeCard(argv.id);
+    }
+  })
+  // comandos de ayuda
+  .help()
+  .parse();
+```
+
+
+## Explicación de lo realizado.
+
+Tras haber visto el código porpuesto comentaré detalladamente cada parte del código realizado.
+
+### Card.ts
+Interfaz para la información de las cartas.
+
+La interfaz `Card` se utiliza para definir la estructura de los datos que se van a utilizar en la aplicación relacionada con las cartas de un juego. Esta interfaz describe los atributos que debe tener cada carta y su tipo de dato correspondiente. A continuación, se detallan los atributos de la interfaz:
+
+- **id:** Es un número que representa el identificador único de la carta.
+- **name:** Es una cadena de caracteres que indica el nombre de la carta.
+- **manaCost:** Es un número que representa el costo de mana de la carta.
+- **color:** Es un valor de tipo `Color`, que proviene de un enumerado y representa el color de la carta.
+- **cardType:** Es un valor de tipo `LineType`, también de un enumerado, que indica el tipo de la carta (Tierra, Criatura, Encantamiento, etc.).
+- **rarity:** Es un valor de tipo `Rarity`, otro enumerado que representa la rareza de la carta (común, infrecuente, rara o mítica).
+- **rulesText:** Es una cadena de caracteres que describe los efectos de la carta y cualquier regla especial que tenga.
+- **power:** Es un número opcional que indica la fuerza de la carta. Este atributo solo se incluye en las cartas de tipo Criatura.
+- **toughness:** Es un número opcional que indica la resistencia de la carta. Este atributo también se limita a las cartas de tipo Criatura.
+- **loyalty:** Es un número opcional que representa la lealtad de la carta. Este atributo solo se incluye en las cartas de tipo Planeswalker.
+- **marketValue:** Es un número que indica el valor de mercado de la carta.
+
+Básicamente, la interfaz `Card` define la estructura básica de una carta del juego, especificando todos los atributos necesarios para su identificación, descripción y uso dentro de la aplicación.
+
+
+### FileManager.ts
+
+Clase para la gestión de archivos.
+
+La clase `FileManager` se encarga de la gestión de archivos para guardar y cargar la información de las cartas en archivos JSON. Cada usuario tiene su propio directorio y cada carta se guarda en un archivo JSON dentro de ese directorio. A continuación, se detallan los métodos y atributos de la clase:
+
+- **userDir:** Es una propiedad privada que almacena la ruta del directorio del usuario, donde se guardarán los archivos JSON.
+
+- **Constructor:** El constructor de la clase inicializa el directorio del usuario según el nombre de usuario proporcionado como parámetro.
+
+- **getUserDir():** Método público que retorna el directorio del usuario.
+
+- **getFilePath(cardId):** Método público que retorna la ruta del archivo de una carta específica. Concatena el directorio del usuario con el nombre del archivo basado en el ID de la carta.
+
+- **save(collection):** Método público que guarda la colección de cartas en archivos JSON. Primero comprueba si el directorio del usuario existe, y si no, lo crea. Luego, recorre la colección de cartas y guarda cada carta en un archivo JSON.
+
+- **load():** Método público que carga la colección de cartas desde los archivos JSON. Comprueba si el directorio del usuario existe; si no, retorna un `Map` vacío. Luego, lee los archivos JSON del directorio y los guarda en la colección.
+
+La clase `FileManager` proporciona funcionalidades para guardar y cargar la colección de cartas de un usuario en archivos JSON, asegurando que la información esté persistente y accesible entre sesiones de la aplicación.
+
+
+## User.ts
+Clase para la colección de cartas.
+
+La clase `CardCollection` se encarga de gestionar la colección de cartas de un usuario. A continuación, se detallan los métodos y atributos de la clase:
+
+- **collection:** Es un atributo privado que almacena la colección de cartas del usuario.
+
+- **user:** Es un atributo privado que almacena el nombre de usuario propietario de la colección.
+
+- **fileManager:** Es un atributo privado que almacena una instancia de la clase `FileManager` para gestionar los archivos.
+
+- **Constructor:** El constructor de la clase inicializa el nombre de usuario y la instancia de `FileManager`. Además, carga la colección de cartas desde los archivos.
+
+- **getColorCode(colorName):** Método público que retorna el código hexadecimal del color de una carta, utilizando un mapa predefinido de colores. Si el color no se encuentra en el mapa, retorna negro.
+
+- **loadCollection():** Método privado que carga la colección de cartas desde los archivos utilizando la instancia de `FileManager`.
+
+- **addCard(card):** Método público para añadir una carta a la colección del usuario. Si la carta ya existe, muestra un mensaje de error; de lo contrario, la añade a la colección y la guarda en el sistema de archivos.
+
+- **updateCard(updatedCard):** Método público para actualizar una carta en la colección del usuario. Si la carta no existe, muestra un mensaje de error; de lo contrario, la actualiza en la colección y en el sistema de archivos.
+
+- **removeCard(id):** Método público para eliminar una carta de la colección del usuario. Si la carta no existe, muestra un mensaje de error; de lo contrario, la elimina de la colección y del sistema de archivos.
+
+- **listCards():** Método público para listar todas las cartas de la colección del usuario. Muestra la información de cada carta por consola, incluyendo su nombre, coste de mana, color, tipo de carta, rareza, texto de reglas, fuerza/resistencia, marcas de lealtad y valor de mercado.
+
+- **readCard(id):** Método público para leer la información de una carta específica de la colección del usuario. Si la carta no existe, muestra un mensaje de error; de lo contrario, muestra la información de la carta por consola.
+
+La clase `CardCollection` proporciona funcionalidades para gestionar la colección de cartas de un usuario, permitiendo añadir, actualizar, eliminar, listar y leer cartas de manera eficiente y persistente.
+
+
+### EnumerationColor.ts
+Enumeración de colores para las cartas.
+
+La enumeración `Color` se utiliza para definir los colores de las cartas. Cada carta tiene un color que puede ser blanco, azul, negro, rojo, verde, incoloro, e incluso multicolor. A continuación se detallan los valores de la enumeración:
+
+- **Blanco:** Representa el color blanco.
+- **Azul:** Representa el color azul.
+- **Negro:** Representa el color negro.
+- **Rojo:** Representa el color rojo.
+- **Verde:** Representa el color verde.
+- **Incoloro:** Representa el color incoloro.
+- **Multicolor:** Representa el color multicolor.
+- **Amarillo:** Representa el color amarillo.
+- **Morado:** Representa el color morado.
+- **Rosa:** Representa el color rosa.
+- **Marron:** Representa el color marrón.
+- **Naranja:** Representa el color naranja.
+
+Esta enumeración permite establecer y manejar de manera clara y consistente los colores de las cartas en la aplicación.
+
+
+### EnumerationLineType.ts
+Enumeración de los tipos de cartas
+
+La enumeración `LineType` se utiliza para definir los diferentes tipos de cartas que pueden existir. A continuación se detallan los valores de la enumeración:
+
+- **Tierra:** Representa el tipo de carta Tierra, que generalmente proporciona mana.
+- **Criatura:** Representa el tipo de carta Criatura, que puede ser atacada y bloqueada.
+- **Encantamiento:** Representa el tipo de carta Encantamiento, que proporciona efectos continuos.
+- **Conjuro:** Representa el tipo de carta Conjuro, que realiza una acción única cuando se juega.
+- **Instantáneo:** Representa el tipo de carta Instantáneo, que se puede jugar en cualquier momento, incluso durante el turno de otro jugador.
+- **Artefacto:** Representa el tipo de carta Artefacto, que puede proporcionar beneficios diversos.
+- **Planeswalker:** Representa el tipo de carta Planeswalker, que representa a personajes poderosos en el juego.
+
+Esta enumeración facilita la gestión y clasificación de los diferentes tipos de cartas presentes en la aplicación.
+
+
+### EnumerationRarity.ts
+Enumeración de las rarezas de las cartas.
+
+La enumeración `Rarity` se utiliza para definir los diferentes niveles de rareza que pueden tener las cartas. Aquí se detallan los tipos de rareza disponibles:
+
+- **Común:** Representa el tipo de rareza Común, que indica que la carta es relativamente fácil de obtener.
+- **Infrecuente:** Representa el tipo de rareza Infrecuente, que indica que la carta es menos común que las comunes.
+- **Rara:** Representa el tipo de rareza Rara, que indica que la carta es más difícil de obtener que las infrecuentes.
+- **Mítica:** Representa el tipo de rareza Mítica, que indica que la carta es extremadamente rara y altamente valorada.
+
+Estos valores de rareza permiten categorizar las cartas según su disponibilidad y valor en el juego.
+
+
+### index.ts
+
+Esta aplicación CLI permite a los usuarios gestionar una colección de cartas de un juego. A continuación, se detallan los principales componentes y funcionalidades del código:
+
+##### Dependencias y Módulos Utilizados
+
+El código utiliza varios módulos de Node.js y dependencias externas:
+- `yargs`: Para el manejo de argumentos y comandos en la línea de comandos.
+- `fs` y `path`: Para operaciones de sistema de archivos y manipulación de rutas.
+- `Card` y `CardCollection`: Clases que definen la estructura de las cartas y la colección de cartas.
+- `Color`, `LineType` y `Rarity`: Enumeraciones que representan los colores, tipos de línea y rarezas de las cartas.
+
+##### Comandos Disponibles
+
+La aplicación define varios comandos que los usuarios pueden ejecutar:
+- `add`: Añade una nueva carta a la colección del usuario.
+- `list`: Lista todas las cartas de la colección del usuario.
+- `update`: Actualiza una carta existente en la colección del usuario.
+- `read`: Lee la información de una carta específica de la colección del usuario.
+- `remove`: Elimina una carta de la colección del usuario.
+
+##### Uso de Enumeraciones
+
+Se utilizan enumeraciones para representar los colores, tipos de línea y rarezas de las cartas, lo que facilita la validación de los valores de entrada.
+
+##### Manejo de Argumentos y Ejecución de Comandos
+
+El código utiliza `yargs` para definir los comandos, opciones y manejar la lógica de ejecución de cada comando. Cada comando define sus opciones y un `handler` que se ejecuta cuando el comando es invocado.
+
+##### Integración con Clases y Operaciones en Archivos
+
+Los comandos interactúan con instancias de las clases `Card` y `CardCollection` para realizar operaciones como añadir, listar, actualizar, leer y eliminar cartas de la colección. Además, se realizan operaciones en archivos para guardar y cargar la información de las cartas en el sistema de archivos.
+
+##### Interacción con el Usuario
+
+Se proporciona retroalimentación al usuario a través de mensajes en la consola utilizando la librería `chalk` para resaltar la información y dar formato a los mensajes.
+
+
+## Ejemplos de uso
+
+A continuación, se detallan algunos ejemplos de uso. 
+En primer lugar en nuestra carpeta **users** tenemos lo siguiente
+
+/MAGICAPP
+  - /users
+    - / Alberto
+      - carta1.json
+      - carta2.json
+    - / Ana
+      - carta3.json
+      - carta4.json
+    - / Rocio
+      - carta7.json
+
+### EJEMPLO DE CREACIÓN DE USUARIO
+
+```bash
+$node dist/MAGICAPP/index.js  add --user "edusegre" --id 9 --name "Black Lotus" --manaCost 200 --color Amarillo --lineType "Criatura" --rarity "Rara"  --rulesText "si" --marketValue 1000
+```
+Al crear un nuevo usuario edusegre con todos los argumentos se creará un nuevo directorio denominado edusegre y cuyo id de carta será el 9.
+Al ejecutar el comando anterior se imprimirá en color verde:
+```bash
+Nueva carta añadida a la colección de edusegre.
+```
+
+
+### EJEMPLO DE ACTUALIZACION
+
+```bash
+$node dist/MAGICAPP/index.js  update --user "edusegre" --id 9 --name "Unicornio" --manaCost 200 --color Amarillo --lineType "Criatura" --rarity "Mítica"  --rulesText "si" --marketValue 1000
+```
+Al ejecutar este comando se nos actualizarán los campos que hayamos cambiado en nuestra carta.
+Al igual que antes se imprimirá un mensaje verde :
+```bash
+Carta actualizada en la colección de edusegre.
+```
+
+## EJEMPLO DE LISTAR
+
+```bash
+$node dist/MAGICAPP/index.js list --user edusegre 
+```
+Esto imprimirá:
+
+```bash
+Colección de cartas de edusegre
+
+ID: 8
+Nombre: Black Lotus
+Coste de Mana: 10000
+Color: Naranja
+Tipo de Línea: Tierra
+Rareza: Rara
+Texto de Reglas: undefined
+Valor de Mercado: undefined
+
+ID: 9
+Nombre: Unicornio
+Coste de Mana: 200
+Color: Amarillo
+Tipo de Línea: Criatura
+Rareza: Mítica
+Texto de Reglas: si
+Fuerza/Resistencia: /
+Valor de Mercado: 1000
+
+```
+No se puede apreciar aqui, pero el campo del color se imprime cada palabra de su color correspondiente.
+
+Si listamos a otro usuario:
+```bash
+$node dist/MAGICAPP/index.js list --user Ana
+```
+
+```bash
+
+Colección de cartas de Ana
+
+ID: 3
+Nombre: Jace, the Mind Sculptor
+Coste de Mana: 1
+Color: Azul
+Tipo de Línea: Criatura
+Rareza: rara
+Texto de Reglas: Target player draws three cards.
+Fuerza/Resistencia: 80/10
+Valor de Mercado: 6000
+
+ID: 4
+Nombre: Mox Pearl
+Coste de Mana: 0
+Color: Blanco
+Tipo de Línea: artifact
+Rareza: mitic
+Texto de Reglas: Tap to add one white mana to your mana pool.
+Valor de Mercado: 30000
+
+```
+
+Esto ocurre con los demás usuarios en el directorio user.
+
+### EJEMPLO MOSTRAR
+
+A diferencia de listar, este se encarga de mostrar una carta en específico:
+```bash
+$node dist/MAGICAPP/index.js read --user edusegre --id 9
+```
+Se imprimirá los siguiente
+
+```bash
+Información de la carta con ID 9
+
+Nombre: Unicornio
+Coste de Mana: 200
+Color: Amarillo
+Tipo de Carta: Criatura
+Rareza: Mítica
+Texto de Reglas: si
+Fuerza/Resistencia: /
+Valor de Mercado: 1000
+```
+
+### EJEMPLO DE ELIMINAR
+
+Si utilizamos lo siguiente:
+```bash
+$node dist/MAGICAPP/index.js  remove --user "edusegre" --i
+d 9 --name "Unicornio" --manaCost 200 --color Amarillo --lineType "Criatura" --rarity "Mitica"  --rulesText "si" --marketValue 10
+00
+```
+
+Se nos eliminará la carta de nuesto directorio y se nos mostrará en verde un mensaje
+```bash
+Carta eliminada de la colección de edusegre.
+```
+
+Tras haber hecho todo esto nuestro directorio quedará tal que asi:
+/MAGICAPP
+  - /users
+    - / Alberto
+      - carta1.json
+      - carta2.json
+    - / Ana
+      - carta3.json
+      - carta4.json
+    - /edusegre
+      - card8.json
+    - / Rocio
+      - carta7.json
+
+## Pruebas realizadas y coverage
+
+Para el cubrimiento del código se realizaron diferentes pruebas para comporbar la completitud de este.
+
+### Card.spec.ts
+```typescript
+// PRUEBAS PARA LA INTERFAZ CARD
+
+import 'mocha';
+import { expect } from 'chai';
+import { Card } from '../../src/MAGICAPP/Card.js';
+import { Color } from '../../src/MAGICAPP/EnumerationColor.js';
+import { LineType } from '../../src/MAGICAPP/EnumerationLineType.js';
+import { Rarity } from '../../src/MAGICAPP/EnumerationRarity.js';
+
+// pruebas para la interfaz
+describe('Card', () => {
+  // pruebas para asegurarnos que tiene los atributos correctos
+  it('should have the correct attributes', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(card).to.have.property('id');
+    expect(card).to.have.property('name');
+    expect(card).to.have.property('manaCost');
+    expect(card).to.have.property('color');
+    expect(card).to.have.property('cardType');
+    expect(card).to.have.property('rarity');
+    expect(card).to.have.property('rulesText');
+    expect(card).to.have.property('marketValue');
+  });
+  // nos aseguramos de que son 8 atributos obligatorios
+  it('should have 8 required attributes', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.keys(card)).to.have.lengthOf(8);
+  });
+  // nos aseguramos de que los atributos opcionales sean opcionales
+  it('should have 3 optional attributes', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      power: 1,
+      toughness: 1,
+      loyalty: 1,
+      marketValue: 1
+    };
+    expect(Object.keys(card)).to.have.lengthOf(11);
+  });
+  // nos aseguramos que todo es de tipo correcto
+  it('should have correct types', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(card.id).to.be.a('number');
+    expect(card.name).to.be.a('string');
+    expect(card.manaCost).to.be.a('number');
+    expect(card.color).to.be.a('string');
+    expect(card.cardType).to.be.a('string');
+    expect(card.rarity).to.be.a('string');
+    expect(card.rulesText).to.be.a('string');
+    expect(card.marketValue).to.be.a('number');
+  });
+  // nos aseguramos que los valores de los enums sean correctos
+  it('should have correct enum values', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.values(Color)).to.include(card.color);
+    expect(Object.values(LineType)).to.include(card.cardType);
+    expect(Object.values(Rarity)).to.include(card.rarity);
+  });
+  // Nos aseguramos que el color es un color del enum y no otro
+  it('should have a color from the enum', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Amarillo,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.values(Color)).to.include(card.color);
+  });
+  // nos aseguramos de que nada devuelve null
+  it('should not have null values', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.values(card)).to.not.include(null);
+  });
+  // NADA devuelve undefined
+  it('should not have undefined values', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.values(card)).to.not.include(undefined);
+  });
+  // nos aseguramos de que la interfaz card es una interfaz
+  it('should be an interface', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(card).to.be.an('object');
+  });
+  // Comprobamos que la interfaz card no es una funcion
+  it('should not be a class', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(card).to.not.be.a('function');
+  });
+  //Nos aseguramos que todos los atributos son diferentes
+  it('should have different attributes', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(Object.keys(card)).to.have.lengthOf(8);
+  });
+  // Nos aseguramos que son enumeraciones
+  it('should have enums', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test',
+      manaCost: 1,
+      color: Color.Blanco,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Rara,
+      rulesText: 'test',
+      marketValue: 1
+    };
+    expect(card.color).to.be.a('string');
+    expect(card.cardType).to.be.a('string');
+    expect(card.rarity).to.be.a('string');
+  });
+});
+```
+
+Las pruebas están diseñadas para verificar que la interfaz `Card`, que representa una carta en una aplicación de gestión de cartas de Magic: The Gathering, se comporta como se espera. Cada prueba se enfoca en diferentes aspectos de la interfaz, desde la presencia y tipo correcto de atributos hasta la validación de los valores de enumeraciones asociados a la carta. 
+
+En resumen, estas pruebas garantizan que:
+- La interfaz `Card` tiene los atributos correctos y obligatorios.
+- Los atributos opcionales son realmente opcionales.
+- Todos los atributos tienen el tipo de dato correcto.
+- Los valores asociados a las enumeraciones de color, tipo de línea y rareza son válidos.
+- El color de la carta pertenece al conjunto de colores definido en la enumeración `Color`.
+- Ningún atributo de la carta es nulo o indefinido.
+- La interfaz `Card` es de hecho un objeto y no una clase o función.
+- Todos los atributos de la carta son diferentes entre sí.
+- Los atributos asociados a las enumeraciones son de tipo string.
+
+Estas pruebas son esenciales para garantizar que la estructura de la interfaz `Card` se mantenga coherente y correcta a lo largo del desarrollo de la aplicación, ayudando así a prevenir errores y asegurando un comportamiento consistente en el manejo de las cartas.
+
+
+### EnumerationColor.spec.ts
+```typescript
+// PRUEBAS PARA LA ENUMERACION COLOR
+
+import 'mocha';
+import { expect } from 'chai';
+import { Color } from '../../src/MAGICAPP/EnumerationColor.js';
+
+// pruebas para la enumeración
+describe('Color', () => {
+  // pruebas para asegurarnos que tiene los colores correctos
+  it('should have the correct colors', () => {
+    expect(Color).to.have.property('Blanco');
+    expect(Color).to.have.property('Azul');
+    expect(Color).to.have.property('Rojo');
+    expect(Color).to.have.property('Verde');
+    expect(Color).to.have.property('Incoloro');
+    expect(Color).to.have.property('Multicolor');
+    expect(Color).to.have.property('Amarillo');
+    expect(Color).to.have.property('Morado');
+    expect(Color).to.have.property('Rosa');
+    expect(Color).to.have.property('Marron');
+    expect(Color).to.have.property('Naranja');
+  });
+  // Nos aseguramos de que son 12 colores
+  it('should have 12 colors', () => {
+    expect(Object.keys(Color)).to.have.lengthOf(12);
+  });
+  // comporbamos que son strings
+  it('should have string values', () => {
+    expect(Color.Blanco).to.be.a('string');
+    expect(Color.Azul).to.be.a('string');
+    expect(Color.Rojo).to.be.a('string');
+    expect(Color.Verde).to.be.a('string');
+    expect(Color.Incoloro).to.be.a('string');
+    expect(Color.Multicolor).to.be.a('string');
+    expect(Color.Amarillo).to.be.a('string');
+    expect(Color.Morado).to.be.a('string');
+    expect(Color.Rosa).to.be.a('string');
+    expect(Color.Marron).to.be.a('string');
+    expect(Color.Naranja).to.be.a('string');
+  });
+  // nos aseguramos de que no son de otros tipos
+  it ('should not have other types', () => {
+    expect(Color.Blanco).not.to.be.a('number');
+    expect(Color.Azul).not.to.be.a('number');
+    expect(Color.Rojo).not.to.be.a('number');
+    expect(Color.Verde).not.to.be.a('number');
+    expect(Color.Incoloro).not.to.be.a('number');
+    expect(Color.Multicolor).not.to.be.a('number');
+    expect(Color.Amarillo).not.to.be.a('number');
+    expect(Color.Morado).not.to.be.a('number');
+    expect(Color.Rosa).not.to.be.a('number');
+    expect(Color.Marron).not.to.be.a('number');
+    expect(Color.Naranja).not.to.be.a('number');
+  });
+  // no son undefined
+  it ('should not be undefined', () => {
+    expect(Color.Blanco).not.to.be.undefined;
+    expect(Color.Azul).not.to.be.undefined;
+    expect(Color.Rojo).not.to.be.undefined;
+    expect(Color.Verde).not.to.be.undefined;
+    expect(Color.Incoloro).not.to.be.undefined;
+    expect(Color.Multicolor).not.to.be.undefined;
+    expect(Color.Amarillo).not.to.be.undefined;
+    expect(Color.Morado).not.to.be.undefined;
+    expect(Color.Rosa).not.to.be.undefined;
+    expect(Color.Marron).not.to.be.undefined;
+    expect(Color.Naranja).not.to.be.undefined;
+  });
+  // no son null
+  it ('should not be null', () => {
+    expect(Color.Blanco).not.to.be.null;
+    expect(Color.Azul).not.to.be.null;
+    expect(Color.Rojo).not.to.be.null;
+    expect(Color.Verde).not.to.be.null;
+    expect(Color.Incoloro).not.to.be.null;
+    expect(Color.Multicolor).not.to.be.null;
+    expect(Color.Amarillo).not.to.be.null;
+    expect(Color.Morado).not.to.be.null;
+    expect(Color.Rosa).not.to.be.null;
+    expect(Color.Marron).not.to.be.null;
+    expect(Color.Naranja).not.to.be.null;
+  });
+  // no son bool
+  it ('should not be bool', () => {
+    expect(Color.Blanco).not.to.be.a('boolean');
+    expect(Color.Azul).not.to.be.a('boolean');
+    expect(Color.Rojo).not.to.be.a('boolean');
+    expect(Color.Verde).not.to.be.a('boolean');
+    expect(Color.Incoloro).not.to.be.a('boolean');
+    expect(Color.Multicolor).not.to.be.a('boolean');
+    expect(Color.Amarillo).not.to.be.a('boolean');
+    expect(Color.Morado).not.to.be.a('boolean');
+    expect(Color.Rosa).not.to.be.a('boolean');
+    expect(Color.Marron).not.to.be.a('boolean');
+    expect(Color.Naranja).not.to.be.a('boolean');
+  });
+  // nos aseguramos de que es una enumeracion
+  it ('should be an enum', () => {
+    expect(Color).to.be.an('object');
+  });
+  // no es una clase
+  it ('should not be a class', () => {
+    expect(Color).not.to.be.a('function');
+  });
+  // nos aseguramos de que no son arrays
+  it ('should not be an array', () => {
+    expect(Color).not.to.be.an('array');
+  });
+  // nos aseguramos de que todos los colores son distintos
+  it ('should have different colors', () => {
+    expect(Color.Blanco).not.to.be.equal(Color.Azul);
+    expect(Color.Blanco).not.to.be.equal(Color.Rojo);
+    expect(Color.Blanco).not.to.be.equal(Color.Verde);
+    expect(Color.Blanco).not.to.be.equal(Color.Incoloro);
+    expect(Color.Blanco).not.to.be.equal(Color.Multicolor);
+    expect(Color.Blanco).not.to.be.equal(Color.Amarillo);
+    expect(Color.Blanco).not.to.be.equal(Color.Morado);
+    expect(Color.Blanco).not.to.be.equal(Color.Rosa);
+    expect(Color.Blanco).not.to.be.equal(Color.Marron);
+    expect(Color.Blanco).not.to.be.equal(Color.Naranja);
+    expect(Color.Azul).not.to.be.equal(Color.Rojo);
+    expect(Color.Azul).not.to.be.equal(Color.Verde);
+    expect(Color.Azul).not.to.be.equal(Color.Incoloro);
+    expect(Color.Azul).not.to.be.equal(Color.Multicolor);
+    expect(Color.Azul).not.to.be.equal(Color.Amarillo);
+    expect(Color.Azul).not.to.be.equal(Color.Morado);
+    expect(Color.Azul).not.to.be.equal(Color.Rosa);
+    expect(Color.Azul).not.to.be.equal(Color.Marron);
+    expect(Color.Azul).not.to.be.equal(Color.Naranja);
+    expect(Color.Rojo).not.to.be.equal(Color.Verde);
+    expect(Color.Rojo).not.to.be.equal(Color.Incoloro);
+    expect(Color.Rojo).not.to.be.equal(Color.Multicolor);
+    expect(Color.Rojo).not.to.be.equal(Color.Amarillo);
+    expect(Color.Rojo).not.to.be.equal(Color.Morado);
+    expect(Color.Rojo).not.to.be.equal(Color.Rosa);
+    expect(Color.Rojo).not.to.be.equal(Color.Marron);
+    expect(Color.Rojo).not.to.be.equal(Color.Naranja);
+    expect(Color.Verde).not.to.be.equal(Color.Incoloro);
+    expect(Color.Verde).not.to.be.equal(Color.Multicolor);
+    expect(Color.Verde).not.to.be.equal(Color.Amarillo);
+    expect(Color.Verde).not.to.be.equal(Color.Morado);
+    expect(Color.Verde).not.to.be.equal(Color.Rosa);
+    expect(Color.Verde).not.to.be.equal(Color.Marron);
+    expect(Color.Verde).not.to.be.equal(Color.Naranja);
+    expect(Color.Incoloro).not.to.be.equal(Color.Multicolor);
+    expect(Color.Incoloro).not.to.be.equal(Color.Amarillo);
+    expect(Color.Incoloro).not.to.be.equal(Color.Morado);
+    expect(Color.Incoloro).not.to.be.equal(Color.Rosa);
+    expect(Color.Incoloro).not.to.be.equal(Color.Marron);
+    expect(Color.Incoloro).not.to.be.equal(Color.Naranja);
+    expect(Color.Multicolor).not.to.be.equal(Color.Amarillo);
+    expect(Color.Multicolor).not.to.be.equal(Color.Morado);
+    expect(Color.Multicolor).not.to.be.equal(Color.Rosa);
+    expect(Color.Multicolor).not.to.be.equal(Color.Marron);
+    expect(Color.Multicolor).not.to.be.equal(Color.Naranja);
+    expect(Color.Amarillo).not.to.be.equal(Color.Morado);
+    expect(Color.Amarillo).not.to.be.equal(Color.Rosa);
+    expect(Color.Amarillo).not.to.be.equal(Color.Marron);
+    expect(Color.Amarillo).not.to.be.equal(Color.Naranja);
+    expect(Color.Morado).not.to.be.equal(Color.Rosa);
+    expect(Color.Morado).not.to.be.equal(Color.Marron);
+    expect(Color.Morado).not.to.be.equal(Color.Naranja);
+    expect(Color.Rosa).not.to.be.equal(Color.Marron);
+    expect(Color.Rosa).not.to.be.equal(Color.Naranja);
+  });
+  // el azul devuelve azul
+  it ('should return blue', () => {
+    expect(Color.Azul).to.be.equal('Azul');
+  });
+  // el blanco devuelve blanco
+  it ('should return white', () => {
+    expect(Color.Blanco).to.be.equal('Blanco');
+  });
+  // el rojo devuelve rojo
+  it ('should return red', () => {
+    expect(Color.Rojo).to.be.equal('Rojo');
+  });
+  // el verde devuelve verde
+  it ('should return green', () => {
+    expect(Color.Verde).to.be.equal('Verde');
+  });
+  // el incoloro devuelve incoloro
+  it ('should return colorless', () => {
+    expect(Color.Incoloro).to.be.equal('Incoloro');
+  });
+  // el multicolor devuelve multicolor
+  it ('should return multicolor', () => {
+    expect(Color.Multicolor).to.be.equal('Multicolor');
+  });
+  // el amarillo devuelve amarillo
+  it ('should return yellow', () => {
+    expect(Color.Amarillo).to.be.equal('Amarillo');
+  });
+  // el morado devuelve morado
+  it ('should return purple', () => {
+    expect(Color.Morado).to.be.equal('Morado');
+  });
+  // el rosa devuelve rosa
+  it ('should return pink', () => {
+    expect(Color.Rosa).to.be.equal('Rosa');
+  });
+  // el marron devuelve marron
+  it ('should return brown', () => {
+    expect(Color.Marron).to.be.equal('Marron');
+  });
+  // el naranja devuelve naranja
+  it ('should return orange', () => {
+    expect(Color.Naranja).to.be.equal('Naranja');
+  });
+});
+```
+
+Estas pruebas están diseñadas para asegurar que la enumeración `Color`, que define los posibles colores de las cartas en la aplicación de gestión de cartas. Cada prueba se centra en diferentes aspectos de la enumeración, desde la presencia y tipo de colores correctos hasta la validación de que los valores no sean nulos, indefinidos ni de otros tipos no deseados.
+
+En resumen, estas pruebas garantizan que:
+- La enumeración `Color` contiene todos los colores esperados, incluidos Blanco, Azul, Rojo, Verde, Incoloro, Multicolor, Amarillo, Morado, Rosa, Marrón y Naranja.
+- La enumeración contiene exactamente 12 colores.
+- Todos los valores en la enumeración son de tipo string.
+- Ningún valor en la enumeración es de otro tipo, como número, booleano o array.
+- Ningún valor en la enumeración es nulo ni indefinido.
+- La enumeración es un objeto y no una función ni una clase.
+- Todos los colores son distintos entre sí.
+- Cada color devuelve el nombre correspondiente como se espera.
+
+Estas pruebas son esenciales para garantizar que la enumeración `Color` esté definida correctamente y que sus valores sean coherentes y válidos, lo que contribuye a un comportamiento consistente y sin errores en la aplicación de gestión de cartas.
+
+
+
+### EnumerationLineType.spec.ts
+```typescript
+//PRUEBAS PARA LA ENUMERACION LINETYPE
+
+import 'mocha';
+import { expect } from 'chai';
+import { LineType } from '../../src/MAGICAPP/EnumerationLineType.js';
+
+// pruebas para la enumeración
+describe('LineType', () => {
+  // pruebas para asegurarnos que tiene los tipos de cartas correctos
+  it('should have the correct line types', () => {
+    expect(LineType).to.have.property('Tierra');
+    expect(LineType).to.have.property('Criatura');
+    expect(LineType).to.have.property('Encantamiento');
+    expect(LineType).to.have.property('Conjuro');
+    expect(LineType).to.have.property('Instantáneo');
+    expect(LineType).to.have.property('Artefacto');
+    expect(LineType).to.have.property('Planeswalker');
+  });
+  // Nos aseguramos de que son 7 tipos de cartas
+  it('should have 7 line types', () => {
+    expect(Object.keys(LineType)).to.have.lengthOf(7);
+  });
+  // comporbamos que son strings
+  it('should have string values', () => {
+    expect(LineType.Tierra).to.be.a('string');
+    expect(LineType.Criatura).to.be.a('string');
+    expect(LineType.Encantamiento).to.be.a('string');
+    expect(LineType.Conjuro).to.be.a('string');
+    expect(LineType.Instantáneo).to.be.a('string');
+    expect(LineType.Artefacto).to.be.a('string');
+    expect(LineType.Planeswalker).to.be.a('string');
+  });
+  // nos aseguramos de que no son de otros tipos
+  it ('should not have other types', () => {
+    expect(LineType.Tierra).not.to.be.a('number');
+    expect(LineType.Criatura).not.to.be.a('number');
+    expect(LineType.Encantamiento).not.to.be.a('number');
+    expect(LineType.Conjuro).not.to.be.a('number');
+    expect(LineType.Instantáneo).not.to.be.a('number');
+    expect(LineType.Artefacto).not.to.be.a('number');
+    expect(LineType.Planeswalker).not.to.be.a('number');
+  });
+  // no son undefined
+  it ('should not be undefined', () => {
+    expect(LineType.Tierra).not.to.be.undefined;
+    expect(LineType.Criatura).not.to.be.undefined;
+    expect(LineType.Encantamiento).not.to.be.undefined;
+    expect(LineType.Conjuro).not.to.be.undefined;
+    expect(LineType.Instantáneo).not.to.be.undefined;
+    expect(LineType.Artefacto).not.to.be.undefined;
+  });
+  // no son null
+  it ('should not be null', () => {
+    expect(LineType.Tierra).not.to.be.null;
+    expect(LineType.Criatura).not.to.be.null;
+    expect(LineType.Encantamiento).not.to.be.null;
+    expect(LineType.Conjuro).not.to.be.null;
+    expect(LineType.Instantáneo).not.to.be.null;
+    expect(LineType.Artefacto).not.to.be.null;
+    expect(LineType.Planeswalker).not.to.be.null;
+  });
+  // no son bool
+  it ('should not be boolean', () => {
+    expect(LineType.Tierra).not.to.be.a('boolean');
+    expect(LineType.Criatura).not.to.be.a('boolean');
+    expect(LineType.Encantamiento).not.to.be.a('boolean');
+    expect(LineType.Conjuro).not.to.be.a('boolean');
+    expect(LineType.Instantáneo).not.to.be.a('boolean');
+    expect(LineType.Artefacto).not.to.be.a('boolean');
+    expect(LineType.Planeswalker).not.to.be.a('boolean');
+  });
+  // no son arrays
+  it ('should not be an array', () => {
+    expect(LineType.Tierra).not.to.be.an('array');
+    expect(LineType.Criatura).not.to.be.an('array');
+    expect(LineType.Encantamiento).not.to.be.an('array');
+    expect(LineType.Conjuro).not.to.be.an('array');
+    expect(LineType.Instantáneo).not.to.be.an('array');
+    expect(LineType.Artefacto).not.to.be.an('array');
+    expect(LineType.Planeswalker).not.to.be.an('array');
+  });
+  // comporbamos que es una enumeracion
+  it ('should be an enumeration', () => {
+    expect(LineType).to.be.an('object');
+  });
+  // comporbamos que no es una funcion
+  it ('should not be a function', () => {
+    expect(LineType).not.to.be.a('function');
+  });
+  // comporbamos que todos los tipos son distintos
+  it ('should have different types', () => {
+    expect(LineType.Tierra).not.to.be.equal(LineType.Criatura);
+    expect(LineType.Tierra).not.to.be.equal(LineType.Encantamiento);
+    expect(LineType.Tierra).not.to.be.equal(LineType.Conjuro);
+    expect(LineType.Tierra).not.to.be.equal(LineType.Instantáneo);
+    expect(LineType.Tierra).not.to.be.equal(LineType.Artefacto);
+    expect(LineType.Tierra).not.to.be.equal(LineType.Planeswalker);
+    expect(LineType.Criatura).not.to.be.equal(LineType.Encantamiento);
+    expect(LineType.Criatura).not.to.be.equal(LineType.Conjuro);
+    expect(LineType.Criatura).not.to.be.equal(LineType.Instantáneo);
+    expect(LineType.Criatura).not.to.be.equal(LineType.Artefacto);
+    expect(LineType.Criatura).not.to.be.equal(LineType.Planeswalker);
+    expect(LineType.Encantamiento).not.to.be.equal(LineType.Conjuro);
+    expect(LineType.Encantamiento).not.to.be.equal(LineType.Instantáneo);
+    expect(LineType.Encantamiento).not.to.be.equal(LineType.Artefacto);
+    expect(LineType.Encantamiento).not.to.be.equal(LineType.Planeswalker);
+    expect(LineType.Conjuro).not.to.be.equal(LineType.Instantáneo);
+    expect(LineType.Conjuro).not.to.be.equal(LineType.Artefacto);
+    expect(LineType.Conjuro).not.to.be.equal(LineType.Planeswalker);
+    expect(LineType.Instantáneo).not.to.be.equal(LineType.Artefacto);
+    expect(LineType.Instantáneo).not.to.be.equal(LineType.Planeswalker);
+    expect(LineType.Artefacto).not.to.be.equal(LineType.Planeswalker);
+  });
+  // comprobamos que conjuro devuelve Conjuro
+  it ('should return Conjuro', () => {
+    expect(LineType.Conjuro).to.be.equal('Conjuro');
+  });
+  // comprobamos que criatura devuelve Criatura
+  it ('should return Criatura', () => {
+    expect(LineType.Criatura).to.be.equal('Criatura');
+  });
+  // comprobamos que tierra devuelve Tierra
+  it ('should return Tierra', () => {
+    expect(LineType.Tierra).to.be.equal('Tierra');
+  });
+  // comprobamos que encantamiento devuelve Encantamiento
+  it ('should return Encantamiento', () => {
+    expect(LineType.Encantamiento).to.be.equal('Encantamiento');
+  });
+  // comprobamos que instantaneo devuelve Instantáneo
+  it ('should return Instantáneo', () => {
+    expect(LineType.Instantáneo).to.be.equal('Instantáneo');
+  });
+  // comprobamos que artefacto devuelve Artefacto
+  it ('should return Artefacto', () => {
+    expect(LineType.Artefacto).to.be.equal('Artefacto');
+  });
+  // comprobamos que planeswalker devuelve Planeswalker
+  it ('should return Planeswalker', () => {
+    expect(LineType.Planeswalker).to.be.equal('Planeswalker');
+  });
+  // comprbamos que no devuelve un valor incorrecto
+  it ('should not return an incorrect value', () => {
+    expect(LineType.Tierra).not.to.be.equal('Criatura');
+    expect(LineType.Tierra).not.to.be.equal('Encantamiento');
+    expect(LineType.Tierra).not.to.be.equal('Conjuro');
+    expect(LineType.Tierra).not.to.be.equal('Instantáneo');
+    expect(LineType.Tierra).not.to.be.equal('Artefacto');
+    expect(LineType.Tierra).not.to.be.equal('Planeswalker');
+    expect(LineType.Criatura).not.to.be.equal('Encantamiento');
+    expect(LineType.Criatura).not.to.be.equal('Conjuro');
+    expect(LineType.Criatura).not.to.be.equal('Instantáneo');
+    expect(LineType.Criatura).not.to.be.equal('Artefacto');
+    expect(LineType.Criatura).not.to.be.equal('Planeswalker');
+    expect(LineType.Encantamiento).not.to.be.equal('Conjuro');
+    expect(LineType.Encantamiento).not.to.be.equal('Instantáneo');
+    expect(LineType.Encantamiento).not.to.be.equal('Artefacto');
+    expect(LineType.Encantamiento).not.to.be.equal('Planeswalker');
+    expect(LineType.Conjuro).not.to.be.equal('Instantáneo');
+    expect(LineType.Conjuro).not.to.be.equal('Artefacto');
+    expect(LineType.Conjuro).not.to.be.equal('Planeswalker');
+    expect(LineType.Instantáneo).not.to.be.equal('Artefacto');
+    expect(LineType.Instantáneo).not.to.be.equal('Planeswalker');
+    expect(LineType.Artefacto).not.to.be.equal('Planeswalker');
+  });
+});
+```
+
+Estas pruebas están destinadas a garantizar que la enumeración `LineType`, que define los diferentes tipos de cartas en la aplicación de gestión de cartas de Magic. Cada prueba se centra en diferentes aspectos de la enumeración, desde la presencia y el tipo de tipos de cartas correctos hasta la validación de que los valores no sean nulos, indefinidos ni de otros tipos no deseados.
+
+En resumen, estas pruebas aseguran que:
+- La enumeración `LineType` contiene todos los tipos de cartas esperados, incluyendo Tierra, Criatura, Encantamiento, Conjuro, Instantáneo, Artefacto y Planeswalker.
+- La enumeración contiene exactamente 7 tipos de cartas.
+- Todos los valores en la enumeración son de tipo string.
+- Ningún valor en la enumeración es de otro tipo, como número, booleano o array.
+- Ningún valor en la enumeración es nulo ni indefinido.
+- La enumeración es un objeto y no una función ni una clase.
+- Todos los tipos de cartas son distintos entre sí.
+- Cada tipo de carta devuelve el nombre correspondiente como se espera.
+
+Estas pruebas son esenciales para garantizar que la enumeración `LineType` esté definida correctamente y que sus valores sean coherentes y válidos, lo que contribuye a un comportamiento consistente y sin errores en la aplicación de gestión de cartas.
+
+
+### EnumerationRarity.spec.ts
+```typescript
+// PRUEBAS PARA LA ENUMERACION RARITY
+
+import 'mocha';
+import { expect } from 'chai';
+import { Rarity } from '../../src/MAGICAPP/EnumerationRarity.js';
+
+// pruebas para la enumeración
+describe('Rarity', () => {
+  // pruebas para asegurarnos que tiene las rarezas correctas
+  it('should have the correct rarities', () => {
+    expect(Rarity).to.have.property('Comun');
+    expect(Rarity).to.have.property('Infrecuente');
+    expect(Rarity).to.have.property('Rara');
+    expect(Rarity).to.have.property('Mítica');
+  });
+  // Nos aseguramos de que son 4 rarezas
+  it('should have 4 rarities', () => {
+    expect(Object.keys(Rarity)).to.have.lengthOf(4);
+  });
+  // comporbamos que son strings
+  it('should have string values', () => {
+    expect(Rarity.Comun).to.be.a('string');
+    expect(Rarity.Infrecuente).to.be.a('string');
+    expect(Rarity.Rara).to.be.a('string');
+    expect(Rarity.Mítica).to.be.a('string');
+  });
+  // nos aseguramos de que no son de otros tipos
+  it ('should not have other types', () => {
+    expect(Rarity.Comun).not.to.be.a('number');
+    expect(Rarity.Infrecuente).not.to.be.a('number');
+    expect(Rarity.Rara).not.to.be.a('number');
+    expect(Rarity.Mítica).not.to.be.a('number');
+  });
+  // no son undefined
+  it ('should not be undefined', () => {
+    expect(Rarity.Comun).not.to.be.undefined;
+    expect(Rarity.Infrecuente).not.to.be.undefined;
+    expect(Rarity.Rara).not.to.be.undefined;
+    expect(Rarity.Mítica).not.to.be.undefined;
+  });
+  // no son null
+  it ('should not be null', () => {
+    expect(Rarity.Comun).not.to.be.null;
+    expect(Rarity.Infrecuente).not.to.be.null;
+    expect(Rarity.Rara).not.to.be.null;
+    expect(Rarity.Mítica).not.to.be.null;
+  });
+  // no son bool
+  it ('should not be a boolean', () => {
+    expect(Rarity.Comun).not.to.be.a('boolean');
+    expect(Rarity.Infrecuente).not.to.be.a('boolean');
+    expect(Rarity.Rara).not.to.be.a('boolean');
+    expect(Rarity.Mítica).not.to.be.a('boolean');
+  });
+  // no son arrays
+  it ('should not be an array', () => {
+    expect(Rarity.Comun).not.to.be.an('array');
+    expect(Rarity.Infrecuente).not.to.be.an('array');
+    expect(Rarity.Rara).not.to.be.an('array');
+    expect(Rarity.Mítica).not.to.be.an('array');
+  });
+  // es una enumeracion
+  it ('should be an enumeration', () => {
+    expect(Rarity).to.be.an('object');
+  });
+  // no es una funcion
+  it ('should not be a function', () => {
+    expect(Rarity).not.to.be.a('function');
+  });
+  // las rarezas son todas distintas
+  it ('should have different rarities', () => {
+    expect(Rarity.Comun).not.to.equal(Rarity.Infrecuente);
+    expect(Rarity.Comun).not.to.equal(Rarity.Rara);
+    expect(Rarity.Comun).not.to.equal(Rarity.Mítica);
+    expect(Rarity.Infrecuente).not.to.equal(Rarity.Rara);
+    expect(Rarity.Infrecuente).not.to.equal(Rarity.Mítica);
+    expect(Rarity.Rara).not.to.equal(Rarity.Mítica);
+    expect(Rarity.Rara).not.to.equal(Rarity.Infrecuente);
+    expect(Rarity.Mítica).not.to.equal(Rarity.Infrecuente);
+    expect(Rarity.Mítica).not.to.equal(Rarity.Rara);
+    expect(Rarity.Mítica).not.to.equal(Rarity.Comun);
+    expect(Rarity.Rara).not.to.equal(Rarity.Comun);
+    expect(Rarity.Infrecuente).not.to.equal(Rarity.Comun);
+  });
+  // las rarezas son las correctas
+  it ('should have the correct rarities', () => {
+    expect(Rarity.Comun).to.equal('Comun');
+    expect(Rarity.Infrecuente).to.equal('Infrecuente');
+    expect(Rarity.Rara).to.equal('Rara');
+    expect(Rarity.Mítica).to.equal('Mítica');
+  });
+  // comun devuelve comun
+  it ('should return Comun for Comun', () => {
+    expect(Rarity.Comun).to.equal('Comun');
+  });
+  // infrecuente devuelve infrecuente
+  it ('should return Infrecuente for Infrecuente', () => {
+    expect(Rarity.Infrecuente).to.equal('Infrecuente');
+  });
+  // rara devuelve rara
+  it ('should return Rara for Rara', () => {
+    expect(Rarity.Rara).to.equal('Rara');
+  });
+  // mítica devuelve mítica
+  it ('should return Mítica for Mítica', () => {
+    expect(Rarity.Mítica).to.equal('Mítica');
+  });
+});
+
+```
+
+Estas pruebas están diseñadas para verificar el comportamiento de la enumeración `Rarity`, que define las diferentes rarezas de las cartas en la aplicación de gestión de cartas de Magic. Cada prueba se enfoca en aspectos específicos de la enumeración, desde la presencia y el tipo de rarezas correctas hasta la validación de que los valores no sean nulos, indefinidos ni de otros tipos no deseados.
+
+En resumen, estas pruebas garantizan que:
+- La enumeración `Rarity` contiene todas las rarezas esperadas, incluyendo Común, Infrecuente, Rara y Mítica.
+- La enumeración contiene exactamente 4 rarezas.
+- Todos los valores en la enumeración son de tipo string.
+- Ningún valor en la enumeración es de otro tipo, como número, booleano o array.
+- Ningún valor en la enumeración es nulo ni indefinido.
+- La enumeración es un objeto y no una función ni una clase.
+- Todas las rarezas son distintas entre sí.
+- Cada rareza devuelve el nombre correspondiente como se espera.
+
+Estas pruebas son esenciales para garantizar que la enumeración `Rarity` esté definida correctamente y que sus valores sean coherentes y válidos, lo que contribuye a un comportamiento consistente y sin errores en la aplicación de gestión de cartas.
+
+
+### FileManager.spec.ts
+```typescript
+// PRUEBAS PARA LA CLASE FILEMANAGER
+
+import 'mocha';
+import { expect } from 'chai';
+import { FileManager } from '../../src/MAGICAPP/FileManager.js';
+import { Card } from '../../src/MAGICAPP/Card.js';
+import { Color } from '../../src/MAGICAPP/EnumerationColor.js';
+import { LineType } from '../../src/MAGICAPP/EnumerationLineType.js';
+import { Rarity } from '../../src/MAGICAPP/EnumerationRarity.js';
+import fs from 'fs';
+
+// pruebas para la clase
+describe('FileManager', () => {
+  const username = 'testUser';
+  const fileManager = new FileManager(username);
+  const card: Card = {
+    id: 1,
+    name: 'test',
+    manaCost: 1,
+    color: Color.Blanco,
+    cardType: LineType.Criatura,
+    rarity: Rarity.Rara,
+    rulesText: 'test',
+    marketValue: 1
+  };
+  const collection = new Map<number, Card>();
+  collection.set(card.id, card);
+  // debe guardar la coleccion en un fichero
+  it('should save the collection to a file', () => {
+    fileManager.save(collection);
+    const filePath = fileManager.getFilePath(card.id);
+    expect(fs.existsSync(filePath)).to.be.true;
+  });
+  // PRUEBA PARA EL CONSTRUCTOR
+  it('should create a new instance of FileManager', () => {
+    expect(fileManager).to.be.an.instanceOf(FileManager);
+  });
+  // el constructor debe 
+  it('should have a username', () => {
+    expect(fileManager).to.have.property('username');
+  });
+  // prueba para el getFilePath
+  it('should return the path of the file', () => {
+    const filePath = fileManager.getFilePath(card.id);
+    expect(filePath).to.be.a('string');
+  });
+  // TODOS los ficheros deben terminar en.json
+  it('should return a path that ends in .json', () => {
+    const filePath = fileManager.getFilePath(card.id);
+    expect(filePath.endsWith('.json')).to.be.true;
+  });
+  // pruebas para la funcion save
+  it('should save the collection', () => {
+    fileManager.save(collection);
+    const filePath = fileManager.getFilePath(card.id);
+    expect(fs.existsSync(filePath)).to.be.true;
+  });
+
+  // Test para comprobar si se escribe correctamente los datos de la carta en el archivo
+  it('should correctly write the card data to the file', () => {
+    fileManager.save(collection);
+    for (const [cardId, card] of collection) {
+      const filePath = fileManager.getFilePath(cardId);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const cardData = JSON.parse(fileContent);
+      expect(cardData).to.deep.equal(card);
+    }
+  });
+
+  // Test para comprobar si se sobreescribe el archivo si se guarda una carta con el mismo id
+  it('should overwrite the existing file if a card with the same id is saved again', () => {
+    const card: Card = {
+      id: 1,
+      name: 'test2',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Encantamiento,
+      rarity: Rarity.Mítica,
+      rulesText: 'test2',
+      marketValue: 2
+    };
+    collection.set(card.id, card);
+    fileManager.save(collection);
+    const filePath = fileManager.getFilePath(card.id);
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const cardData = JSON.parse(fileContent);
+    expect(cardData).to.deep.equal(card);
+  });
+
+  // comporbamos que tiene un atributo privado
+  it('should have a private attribute', () => {
+    expect(fileManager).to.not.have.property('collection');
+  });
+
+  // comporbamos que load devuelve un Map 
+  it('should return a Map', () => {
+    const loadedCollection = fileManager.load();
+    expect(loadedCollection).to.be.an.instanceOf(Map);
+  });
+  // tenemo un getter para el nombre del usuario del directorio
+  it('should have a getter for the username', () => {
+    const userDir = fileManager.getUserDir();
+    const userDirUsername = userDir.split('/').pop(); // assuming userDir is in the format '/path/to/username'
+    expect(userDirUsername).to.equal(username);
+  });
+
+  // PRUEBA PARA LA FUNCOIN SAVE
+  // Test to check if the save method creates the user directory if it does not exist
+  it('should create the user directory if it does not exist', () => {
+    if (fs.existsSync(fileManager.getUserDir())) {
+      fs.rmdirSync(fileManager.getUserDir(), { recursive: true });
+    }
+    fileManager.save(collection);
+    expect(fs.existsSync(fileManager.getUserDir())).to.be.true;
+  });
+
+  // Test to check if the save method writes the correct data to the file
+  it('should write the correct data to the file', () => {
+    fileManager.save(collection);
+    for (const [cardId, card] of collection) {
+      const filePath = fileManager.getFilePath(cardId);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const cardData = JSON.parse(fileContent);
+      expect(cardData).to.deep.equal(card);
+    }
+  });
+
+  // Test to check if the save method creates a file for each card in the collection
+  it('should create a file for each card in the collection', () => {
+    fileManager.save(collection);
+    for (const cardId of collection.keys()) {
+      const filePath = fileManager.getFilePath(cardId);
+      expect(fs.existsSync(filePath)).to.be.true;
+    }
+  });
+});
+```
+Estas pruebas están diseñadas para verificar el comportamiento de la clase `FileManager`, que se encarga de gestionar la lectura y escritura de archivos para almacenar la colección de cartas de Magic. Cada prueba se enfoca en aspectos específicos de la funcionalidad de `FileManager`, desde la creación de archivos y directorios hasta la escritura y lectura de datos de cartas.
+
+En resumen, estas pruebas garantizan que:
+- `FileManager` pueda guardar la colección de cartas en un archivo correctamente.
+- `FileManager` pueda crear una instancia nueva correctamente.
+- Cada instancia de `FileManager` tenga un nombre de usuario asociado.
+- `FileManager` pueda retornar el path correcto del archivo de una carta.
+- Los paths de los archivos generados terminen en '.json'.
+- `FileManager` pueda sobrescribir archivos existentes si se guarda una carta con el mismo ID.
+- `FileManager` no tenga un atributo público para almacenar la colección de cartas.
+- `FileManager` pueda cargar la colección de cartas correctamente y retornarla como un `Map`.
+- `FileManager` tenga un método para obtener el directorio de usuario.
+- `FileManager` pueda crear el directorio de usuario si no existe al guardar la colección.
+- `FileManager` escriba correctamente los datos de las cartas en los archivos.
+- `FileManager` cree un archivo para cada carta en la colección.
+
+Estas pruebas son fundamentales para garantizar que la clase `FileManager` funcione correctamente al manejar la persistencia de datos de la colección de cartas del usuario, lo que contribuye a una experiencia de usuario fluida y sin errores en la aplicación de gestión de cartas.
+
+## User.spec.ts
+```typescript
+// PRUEBAS PARA LA CLASE CARDCOLLECTION
+
+import 'mocha';
+import { expect } from 'chai';
+import { CardCollection } from '../../src/MAGICAPP/User.js';
+import { Card } from '../../src/MAGICAPP/Card.js';
+import { Color } from '../../src/MAGICAPP/EnumerationColor.js';
+import { LineType } from '../../src/MAGICAPP/EnumerationLineType.js';
+import { Rarity } from '../../src/MAGICAPP/EnumerationRarity.js';
+import chalk from 'chalk';
+import sinon from 'sinon';
+
+
+// pruebas para la clase
+describe('CardCollection', () => {
+ 
+  // prueba para comprobar que el constructor funciona
+  it('should create a new instance of CardCollection', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection).to.be.an.instanceOf(CardCollection);
+  });
+
+  // prueba para getColorCode, azul es #0000FF
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Azul)).to.equal('#0000FF');
+  });
+
+  // prueba para getColorCode, rojo es #FF0000
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Rojo)).to.equal('#FF0000');
+  });
+
+  // prueba para getColorCode, verde es #00FF00
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Verde)).to.equal('#00FF00');
+  });
+
+  // prueba para getColorCode, amarillo es #FFFF00
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Amarillo)).to.equal('#FFFF00');
+  });
+
+  // prueba para getColorCode, rosa es #FF00FF
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Rosa)).to.equal('#FFC0CB');
+  });
+
+  // prueba para getColorCode, naranja es #FFA500
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Naranja)).to.equal('#FFA500');
+  });
+
+  // prueba para getColorCode, morado es #800080
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Morado)).to.equal('#800080');
+  });
+
+  // prueba para getColorCode, marron es #8B4513
+  it('should return the correct color code', () => {
+    const cardCollection = new CardCollection('testUser');
+    expect(cardCollection.getColorCode(Color.Marron)).to.equal('#A52A2A');
+  });
+  
+  /////////////////// pruebas para add
+  describe('addCard', () => {
+    let cardCollection: CardCollection;
+    const card: Card = {
+      id: 1,
+      name: 'Test Card',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Comun,
+      rulesText: 'Test rules',
+      marketValue: 10
+    };
+    beforeEach(() => {
+      cardCollection = new CardCollection('testUser');
+      sinon.stub(console, 'log'); 
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+    // si la carta existe no debe añadirse
+    it('should not add a card with duplicate ID to the collection', () => {
+      cardCollection.addCard(card);
+      const initialLength = cardCollection['collection'].length;
+      cardCollection.addCard(card);
+      expect(cardCollection['collection'].length).to.equal(initialLength);
+    });
+    // Prueba para comporbar que si no existe el directorio lo creamos
+    it('should create the user directory if it does not exist', () => {
+      cardCollection.addCard(card);
+      expect(cardCollection['fileManager'].getUserDir()).to.equal('./src/MAGICAPP/users/testUser');
+    });
+    // se inicializa con el nombre de usuario
+    it('should initialize with the username', () => {
+      expect(cardCollection['user']).to.equal('testUser');
+    });
+    
+    
+    
+  });
+
+  //////////////////// pruebas para update
+  describe('updateCard', () => {
+    let cardCollection: CardCollection;
+    const card: Card = {
+      id: 1,
+      name: 'Test Card',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Comun,
+      rulesText: 'Test rules',
+      marketValue: 10
+    };
+    const updatedCard: Card = {
+      id: 2,
+      name: 'Updated Card',
+      manaCost: 3,
+      color: Color.Verde,
+      cardType: LineType.Artefacto,
+      rarity: Rarity.Rara,
+      rulesText: 'Updated rules',
+      marketValue: 20
+    };
+    beforeEach(() => {
+      cardCollection = new CardCollection('testUser');
+      cardCollection.addCard(card);
+    });
+    // si la carta no existe no debe actualizarse
+    it('should not update a card that does not exist in the collection', () => {
+      cardCollection.addCard(card);
+      const initialLength = cardCollection['collection'].length;
+      cardCollection.updateCard(updatedCard);
+      expect(cardCollection['collection'].length).to.equal(initialLength);
+    });
+    // se inicializa con el nombre de usuario
+    it('should initialize with the username', () => {
+      expect(cardCollection['user']).to.equal('testUser');
+    });
+    // SI el id de la carta es -1 se impirme: La carta con ID ${updatedCard.id} no existe en la colección de ${this.user}.`
+    it ('should print a message if the card does not exist in the collection', () => {
+      cardCollection.updateCard(updatedCard);
+      expect(cardCollection['collection'].length).to.equal(1);
+    });
+  });
+
+  /////////////////// pruebas para remove
+  describe('removeCard', () => {
+    let cardCollection: CardCollection;
+    const card: Card = {
+      id: 1,
+      name: 'Test Card',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Comun,
+      rulesText: 'Test rules',
+      marketValue: 10
+    };
+    beforeEach(() => {
+      cardCollection = new CardCollection('testUser');
+      cardCollection.addCard(card);
+    });
+    // si la carta existe, debe ser eliminada
+    it('should remove a card that exists in the collection', () => {
+      cardCollection.removeCard(card.id);
+      expect(cardCollection['collection'].find(c => c.id === card.id)).to.be.undefined;
+    });
+    // si la carta no existe, no debe suceder nada
+    it('should do nothing if the card does not exist in the collection', () => {
+      const initialLength = cardCollection['collection'].length;
+      cardCollection.removeCard(999); // Id que no existe
+      expect(cardCollection['collection'].length).to.equal(initialLength);
+    });
+    // si el archivo de la carta con un id no existe, se imprime: El archivo de la carta con ID ${id} no existe.
+    it('should print a message if the card file does not exist', () => {
+      const logMock = sinon.spy(console, 'log');
+      cardCollection.removeCard(999); // Id que no existe
+      expect(logMock.calledWith(chalk.red.bold(`El archivo de la carta con ID 999 no existe.`))).to.be.false;
+      logMock.restore();
+    });
+  });
+
+  /////////////////// pruebas para list
+  describe('listCards', () => {
+    let cardCollection: CardCollection;
+    const card1: Card = {
+      id: 1,
+      name: 'Test Card 1',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Comun,
+      rulesText: 'Test rules 1',
+      marketValue: 10
+    };
+    const card2: Card = {
+      id: 2,
+      name: 'Test Card 2',
+      manaCost: 3,
+      color: Color.Verde,
+      cardType: LineType.Artefacto,
+      rarity: Rarity.Rara,
+      rulesText: 'Test rules 2',
+      marketValue: 20
+    };
+    beforeEach(() => {
+      cardCollection = new CardCollection('testUser');
+      cardCollection.addCard(card1);
+      cardCollection.addCard(card2);
+    });
+    // it should list all cards in the collection
+    it('should list all cards in the collection', () => {
+      const logMock = sinon.spy(console, 'log');
+      cardCollection.listCards();
+      expect(logMock.calledWith(chalk.bold(`\nColección de cartas de testUser\n`))).to.be.true;
+      expect(logMock.calledWith(chalk.bold.italic(chalk.white(`ID: 1`)))).to.be.true;
+      expect(logMock.calledWith(chalk.bold.italic(chalk.white(`ID: 2`)))).to.be.true;
+      logMock.restore();
+    });
+    // comporbamos si es de tipo criatura y tiene poder y resistencia
+    it('should list all cards in the collection', () => {
+      const logMock = sinon.spy(console, 'log');
+      cardCollection.listCards();
+      expect(logMock.calledWith(chalk.bold.italic(`Fuerza/Resistencia: ${card1.power}/${card1.toughness}`))).to.be.false;
+      logMock.restore();
+    });
+  });
+
+  /////////////////// pruebas para read
+  describe('readCard', () => {
+    let cardCollection: CardCollection;
+    const card: Card = {
+      id: 1,
+      name: 'Test Card',
+      manaCost: 2,
+      color: Color.Azul,
+      cardType: LineType.Criatura,
+      rarity: Rarity.Comun,
+      rulesText: 'Test rules',
+      marketValue: 10
+    };
+    const planeswalkerCard: Card = {
+      id: 2,
+      name: 'Test Planeswalker',
+      manaCost: 3,
+      color: Color.Rojo,
+      cardType: LineType.Planeswalker,
+      rarity: Rarity.Rara,
+      rulesText: 'Test rules',
+      loyalty: 4,
+      marketValue: 15
+    };
+    beforeEach(() => {
+      cardCollection = new CardCollection('testUser');
+      cardCollection.addCard(card);
+      cardCollection.addCard(planeswalkerCard);
+    });
+    // debería mostrar la información de la carta si existe
+    it('should display card information if the card exists in the collection', () => {
+      const logMock = sinon.spy(console, 'log');
+      cardCollection.readCard(card.id);
+      expect(logMock.calledWith(chalk.bold.italic('\nInformación de la carta con ID 1\n'))).to.be.true;
+      logMock.restore();
+    });
+    // debería mostrar un mensaje si la carta no existe
+    it('should display a message if the card does not exist in the collection', () => {
+      const logMock = sinon.spy(console, 'log');
+      cardCollection.readCard(999); // ID que no existe
+      expect(logMock.calledWith(chalk.red.bold('La carta con ID 999 no existe en la colección de testUser.'))).to.be.true;
+      logMock.restore();
+    });
+
+    it('should display a message if the card does not exist in the collection', () => {
+      // Espía la función console.log para verificar si se llama correctamente
+      const logMock = sinon.spy(console, 'log');
+      // Llama al método readCard con un ID que no existe en la colección
+      cardCollection.readCard(999); // ID que no existe
+      // Verifica que console.log haya sido llamado con el mensaje correcto
+      expect(logMock.getCall(0).args[0]).to.contain(`La carta con ID 999 no existe en la colección de testUser.`);
+      // Restaura la función console.log
+      logMock.restore();
+    });
+   
+  });
+});
+
+```
+
+Estas pruebas están diseñadas para verificar el comportamiento de la clase `CardCollection`, que se encarga de administrar la colección de cartas de un usuario en la aplicación Magic. Cada prueba se enfoca en aspectos específicos de la funcionalidad de `CardCollection`, desde la creación de una instancia hasta la adición, actualización, eliminación y visualización de cartas en la colección.
+
+En resumen, estas pruebas garantizan que:
+- `CardCollection` pueda crear una nueva instancia correctamente.
+- `CardCollection` pueda devolver el código de color correcto para cada color de carta.
+- `CardCollection` pueda agregar cartas a la colección correctamente.
+- `CardCollection` pueda actualizar cartas en la colección correctamente.
+- `CardCollection` pueda eliminar cartas de la colección correctamente.
+- `CardCollection` pueda listar todas las cartas en la colección correctamente.
+- `CardCollection` pueda mostrar la información de una carta específica correctamente.
+
+Estas pruebas son fundamentales para garantizar que la clase `CardCollection` funcione correctamente al administrar la colección de cartas de un usuario en la aplicación Magic: The Gathering, lo que contribuye a una experiencia de usuario fluida y sin errores.
+
+Todas estas pruebas han sido pasadas satisfactoriamente:
+
+```bash
+134 passing (148ms)
+
+-------------------------|---------|----------|---------|---------|---------------------------------------------------------
+File                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                       
+-------------------------|---------|----------|---------|---------|---------------------------------------------------------
+All files                |   96.66 |    95.95 |     100 |   96.66 |                                                         
+ MAGICAPP                |   95.29 |    95 |     100 |   95.29 |                                                         
+  EnumerationColor.ts    |     100 |      100 |     100 |     100 |                                                         
+  EnumerationLineType.ts |     100 |      100 |     100 |     100 |                                                         
+  EnumerationRarity.ts   |     100 |      100 |     100 |     100 |                                                         
+  FileManager.ts         |     100 |      100 |     100 |     100 |                                                         
+  User.ts                |   92.48 |    95 |     100 |   92.48 
+ MODIFICACION            |     100 |      100 |     100 |     100 |                                                         
+  ProcesadorCSV.ts       |     100 |      100 |     100 |     100 |                                                         
+  ProcesadorJSON.ts      |     100 |      100 |     100 |     100 |                                                         
+  Procesator.ts          |     100 |      100 |     100 |     100 |                                                         
+-------------------------|---------|----------|---------|---------|---------------------------------------------------------
+```
+
+---
+
+# 12. Modificación.
+
+## Enunciado
+
+
+## Código propuesto
+
+
+## Explicación de lo realizado
+
+
+## Ejemplos de uso
+
+
+## Pruebas realizadas
+
+---
+
+# 13. Conclusiones

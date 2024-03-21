@@ -81,7 +81,9 @@ yargs(hideBin(process.argv))
     command: 'list',
     describe: 'Lista todos los usuarios de la colección',
     builder: {
-      user: { describe: 'Nombre del usuario', demandOption: true, type: 'string' }
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' }
     },
     // esto es lo que se ejecuta cuando se llama al comando
     handler(argv) {
@@ -152,8 +154,12 @@ yargs(hideBin(process.argv))
     command: 'read',
     describe: 'Lee un usuario de la colección',
     builder: {
-      user: { describe: 'Nombre del usuario', demandOption: true, type: 'string' },
-      id: { describe: 'ID del usuario', demandOption: true, type: 'number' }
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' },
+      id: { describe: 'ID del usuario', 
+      demandOption: true, 
+      type: 'number' }
     },
     handler(argv) {
       const collection = new CardCollection(argv.user);
@@ -171,8 +177,12 @@ yargs(hideBin(process.argv))
     command: 'remove',
     describe: 'Elimina un usuario de la colección',
     builder: {
-      user: { describe: 'Nombre del usuario', demandOption: true, type: 'string' },
-      id: { describe: 'ID del usuario', demandOption: true, type: 'number' }
+      user: { describe: 'Nombre del usuario', 
+      demandOption: true, 
+      type: 'string' },
+      id: { describe: 'ID del usuario', 
+      demandOption: true, 
+      type: 'number' }
     },
     handler(argv) {
       const collection = new CardCollection(argv.user);
