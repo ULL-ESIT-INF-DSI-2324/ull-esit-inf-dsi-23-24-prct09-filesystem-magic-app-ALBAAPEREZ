@@ -27,6 +27,12 @@
 11. Ejercicio
 13. [Conclusiones](#9-conclusiones)
 
+[![Coveralls](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/coveralls.yml)
+
+[![Sonar-Cloud](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/sonarcloud.yml)
+
+[![Tests](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/node.js.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2324/ull-esit-inf-dsi-23-24-prct09-filesystem-magic-app-ALBAAPEREZ/actions/workflows/node.js.yml)
+
 ---
 
 # 1. Introducción
